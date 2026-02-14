@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Lego Love Story</title>
+  <meta name="description" content="A Valentine's Day love story told through Lego characters" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#10084;</text></svg>">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Dancing+Script:wght@400;500;600;700&display=swap');
+
+    :root {
+      --pink: #ff6b8a;
+      --rose: #ff4d6d;
+      --coral: #ffa07a;
+      --lavender: #c4a7e7;
+      --deep-purple: #1a1a2e;
+      --gold: #FFD700;
+      --lego-yellow: #ffcd4a;
+      --lego-yellow-border: #e0a800;
+      --char1-color: #ff6b6b;
+      --char2-color: #5b86e5;
+      --stage-max: 720px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: var(--deep-purple);
+      background-image:
+        radial-gradient(ellipse at 20% 50%, rgba(255,107,138,.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(91,134,229,.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(196,167,231,.05) 0%, transparent 50%);
+      color: #fff;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 0;
+    }
+
+    /* ═══════════════════════════════════════════
+       BEAD 1: DESIGN SYSTEM — Floating Hearts BG
+    ═══════════════════════════════════════════ */
+    .hearts-bg {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .hearts-bg span {
+      position: absolute; display: block; bottom: -30px;
+      font-size: 20px; opacity: 0;
+      animation: floatUp var(--dur, 8s) linear infinite;
+      animation-delay: var(--delay, 0s);
+    }
+    @keyframes floatUp {
+      0%   { opacity: 0; transform: translateY(0) rotate(0deg) scale(.5); }
+      10%  { opacity: .4; }
+      50%  { opacity: .3; }
+      90%  { opacity: .15; }
+      100% { opacity: 0; transform: translateY(-110vh) rotate(720deg) scale(1.1); }
+    }
+
+    /* ═══════════════════════════════════════════
+       HEADER
+    ═══════════════════════════════════════════ */
+    .header {
+      position: relative; z-index: 2;
+      text-align: center;
+      padding: 10px 20px 8px;
+    }
+    .header h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(2.2rem, 7vw, 3.8rem);
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--pink), var(--coral), var(--pink));
+      background-size: 200% 200%;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 3s ease-in-out infinite;
+      filter: drop-shadow(0 2px 10px rgba(255,107,138,.3));
+    }
+    .header p {
+      font-size: clamp(.85rem, 2.5vw, 1.05rem);
+      color: var(--lavender); margin-top: 4px; opacity: .8;
+      font-weight: 500;
+      letter-spacing: .5px;
+    }
+    @keyframes shimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* ═══════════════════════════════════════════
+       STAGE — Glassmorphism container
+    ═══════════════════════════════════════════ */
+    .stage-wrapper {
+      position: relative; z-index: 2;
+      width: min(92vw, var(--stage-max));
+      margin: 16px auto 0;
+    }
+    .stage-glass {
+      background: rgba(255,255,255,.03);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,.06);
+      box-shadow:
+        0 0 60px rgba(255,107,138,.12),
+        0 20px 60px rgba(0,0,0,.3);
+    }
+    .stage {
+      position: relative;
+      width: 100%; aspect-ratio: 16 / 10;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: inset 0 0 30px rgba(0,0,0,.2);
+    }
+
+    /* ═══════════════════════════════════════════
+       SCENES
+    ═══════════════════════════════════════════ */
+    .scene {
+      position: absolute; inset: 0;
+      display: flex; align-items: flex-end; justify-content: center;
+      opacity: 0;
+      transition: opacity 1.4s cubic-bezier(.4,0,.2,1);
+      pointer-events: none;
+      will-change: opacity;
+    }
+    .scene.active { opacity: 1; pointer-events: auto; }
+
+    /* ═══════════════════════════════════════════
+       BEAD 4: NARRATION — Typewriter
+    ═══════════════════════════════════════════ */
+    .narration {
+      position: relative; z-index: 2;
+      text-align: center;
+      max-width: 620px;
+      margin: 20px auto 0;
+      padding: 0 24px;
+      min-height: 90px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .narration-inner {
+      position: relative;
+    }
+    .narration p {
+      font-size: clamp(.92rem, 2.6vw, 1.15rem);
+      line-height: 1.75;
+      color: #e8d5f5;
+      font-style: italic;
+      font-weight: 500;
+      text-shadow: 0 0 20px rgba(232,213,245,.15);
+    }
+    .narration .cursor {
+      display: inline-block;
+      width: 2px; height: 1.1em;
+      background: var(--lavender);
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    /* ═══════════════════════════════════════════
+       BEAD 5: CONTROLS & PROGRESS
+    ═══════════════════════════════════════════ */
+    .controls {
+      position: relative; z-index: 2;
+      text-align: center;
+      margin: 20px auto 20px;
+    }
+    .btn {
+      background: linear-gradient(135deg, var(--pink), var(--rose));
+      border: none; color: #fff;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 1.05rem; font-weight: 700;
+      padding: 14px 40px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform .25s cubic-bezier(.4,0,.2,1), box-shadow .25s;
+      box-shadow: 0 4px 24px rgba(255,77,109,.35);
+      letter-spacing: .5px;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent, rgba(255,255,255,.15), transparent);
+      transform: translateX(-100%);
+      transition: transform .4s;
+    }
+    .btn:hover::after { transform: translateX(100%); }
+    .btn:hover { transform: scale(1.05); box-shadow: 0 6px 32px rgba(255,77,109,.5); }
+    .btn:active { transform: scale(.97); }
+
+    /* Progress bar */
+    .progress-container {
+      margin-top: 16px;
+      display: flex; align-items: center; gap: 10px;
+      justify-content: center;
+    }
+    .progress-dots {
+      display: flex; gap: 8px; align-items: center;
+    }
+    .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: rgba(255,255,255,.15);
+      transition: all .5s cubic-bezier(.4,0,.2,1);
+      cursor: pointer;
+    }
+    .dot:hover { background: rgba(255,255,255,.3); transform: scale(1.2); }
+    .dot.active {
+      background: var(--pink);
+      transform: scale(1.35);
+      box-shadow: 0 0 12px rgba(255,107,138,.5);
+    }
+    .dot.done { background: var(--coral); }
+
+    .progress-bar-wrap {
+      width: min(90vw, 400px);
+      height: 3px;
+      background: rgba(255,255,255,.1);
+      border-radius: 2px;
+      margin: 10px auto 0;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--pink), var(--coral));
+      border-radius: 2px;
+      width: 0%;
+      transition: width .5s ease;
+    }
+
+    /* ═══════════════════════════════════════════
+       BEAD 2: LEGO CHARACTERS (Pure CSS)
+    ═══════════════════════════════════════════ */
+    .lego-couple {
+      position: absolute; bottom: 12%; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 4px; z-index: 10;
+    }
+    .lego {
+      width: 50px; position: relative;
+    }
+    /* Head */
+    .lego-head {
+      width: 32px; height: 32px;
+      background: var(--lego-yellow);
+      border-radius: 7px;
+      margin: 0 auto;
+      position: relative;
+      border: 2px solid var(--lego-yellow-border);
+    }
+    .lego-head::before { /* stud */
+      content: ''; position: absolute;
+      top: -10px; left: 50%; transform: translateX(-50%);
+      width: 14px; height: 10px;
+      background: var(--lego-yellow);
+      border-radius: 4px 4px 0 0;
+      border: 2px solid var(--lego-yellow-border); border-bottom: none;
+    }
+    .lego-eyes {
+      position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+      width: 18px; display: flex; justify-content: space-between;
+    }
+    .lego-eye {
+      width: 5px; height: 5px; background: #1a1a2e; border-radius: 50%;
+    }
+    .lego-smile {
+      position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+      width: 10px; height: 5px;
+      border: 2px solid #1a1a2e; border-top: none;
+      border-radius: 0 0 10px 10px;
+    }
+    /* Hair */
+    .lego-hair {
+      position: absolute; top: -8px; left: -2px; right: -2px; height: 14px;
+      border-radius: 8px 8px 0 0; z-index: 2;
+    }
+    .lego-char1 .lego-hair { background: #5a3825; }
+    .lego-char2 .lego-hair { background: #1a0d08; height: 22px; top: -10px; border-radius: 12px 12px 3px 3px; }
+
+    /* Body */
+    .lego-body {
+      width: 36px; height: 30px;
+      margin: 2px auto 0;
+      border-radius: 4px;
+      position: relative;
+      border: 2px solid rgba(0,0,0,.12);
+    }
+    .lego-char1 .lego-body { background: var(--char1-color); }
+    .lego-char2 .lego-body { background: var(--char2-color); }
+
+    .lego-arms {
+      position: absolute; top: 2px; width: calc(100% + 16px); left: -8px;
+      display: flex; justify-content: space-between;
+    }
+    .lego-arm {
+      width: 8px; height: 20px; border-radius: 4px;
+      transition: transform .3s;
+    }
+    .lego-char1 .lego-arm { background: var(--char1-color); border: 1.5px solid rgba(0,0,0,.1); }
+    .lego-char2 .lego-arm { background: var(--char2-color); border: 1.5px solid rgba(0,0,0,.1); }
+
+    /* Legs */
+    .lego-legs {
+      display: flex; justify-content: center; gap: 2px; margin-top: 1px;
+    }
+    .lego-leg {
+      width: 14px; height: 20px; border-radius: 3px;
+      transform-origin: top center;
+    }
+    .lego-char1 .lego-leg { background: #4a4a8a; border: 1.5px solid rgba(0,0,0,.1); }
+    .lego-char2 .lego-leg { background: #4a4a8a; border: 1.5px solid rgba(0,0,0,.1); }
+
+    /* ── Walking Animation ── */
+    .walking .lego-char1 { animation: walk 0.6s ease-in-out infinite; }
+    .walking .lego-char2 { animation: walk 0.6s ease-in-out infinite 0.3s; }
+    @keyframes walk {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    .walking .lego-char1 .lego-leg:first-child { animation: legSwing .6s ease-in-out infinite; }
+    .walking .lego-char1 .lego-leg:last-child  { animation: legSwing .6s ease-in-out infinite .3s; }
+    .walking .lego-char2 .lego-leg:first-child { animation: legSwing .6s ease-in-out infinite .3s; }
+    .walking .lego-char2 .lego-leg:last-child  { animation: legSwing .6s ease-in-out infinite; }
+    @keyframes legSwing {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(15deg); }
+    }
+
+    /* ── Swaying Animation (Sunset/Finale) ── */
+    .swaying .lego-char1 { animation: sway 3s ease-in-out infinite; }
+    .swaying .lego-char2 { animation: sway 3s ease-in-out infinite 1.5s; }
+    @keyframes sway {
+      0%, 100% { transform: rotate(-2deg); }
+      50% { transform: rotate(2deg); }
+    }
+
+    /* ── Sitting Animation (Dinner/Rainy) ── */
+    .sitting .lego .lego-legs { display: flex; }
+    .sitting .lego .lego-leg { transform: rotate(90deg); height: 14px; }
+
+    /* Couple heart */
+    .couple-heart {
+      position: absolute; bottom: 60%; left: 50%; transform: translateX(-50%);
+      font-size: 14px; opacity: 0;
+      animation: heartPulse 1.5s ease-in-out infinite;
+      filter: drop-shadow(0 0 4px rgba(255,107,138,.5));
+    }
+    .active .couple-heart { opacity: 1; }
+    @keyframes heartPulse {
+      0%, 100% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.3); }
+    }
+
+    /* ── Scene-specific accessories ── */
+    .lego-accessory {
+      position: absolute;
+      z-index: 20;
+      font-size: 12px;
+    }
+
+    /* ═══════════════════════════════════════════
+       BEAD 3: SCENE BACKGROUNDS
+    ═══════════════════════════════════════════ */
+
+    /* ─── Scene 1: Sunny Walk ─── */
+    .scene-sunny {
+      background: linear-gradient(180deg, #56b4f9 0%, #87CEEB 30%, #a8e6a3 65%, #3d9140 85%, #2d6e2d 100%);
+    }
+    .sun {
+      position: absolute; top: 10%; right: 14%;
+      width: 60px; height: 60px;
+      background: var(--gold);
+      border-radius: 50%;
+      box-shadow: 0 0 40px var(--gold), 0 0 80px rgba(255,215,0,.3);
+      animation: sunGlow 3s ease-in-out infinite;
+    }
+    .sun-rays {
+      position: absolute; top: 10%; right: 14%;
+      width: 60px; height: 60px;
+    }
+    .sun-rays::before, .sun-rays::after {
+      content: ''; position: absolute;
+      top: 50%; left: 50%; transform: translate(-50%,-50%);
+      border-radius: 50%;
+      border: 2px solid rgba(255,215,0,.15);
+      animation: sunRayPulse 3s ease-in-out infinite;
+    }
+    .sun-rays::before { width: 80px; height: 80px; }
+    .sun-rays::after { width: 100px; height: 100px; animation-delay: 1s; }
+    @keyframes sunRayPulse {
+      0%, 100% { opacity: .3; transform: translate(-50%,-50%) scale(1); }
+      50% { opacity: .6; transform: translate(-50%,-50%) scale(1.1); }
+    }
+    @keyframes sunGlow {
+      0%, 100% { box-shadow: 0 0 40px var(--gold), 0 0 80px rgba(255,215,0,.3); }
+      50% { box-shadow: 0 0 60px var(--gold), 0 0 100px rgba(255,215,0,.45); }
+    }
+    .clouds {
+      position: absolute; top: 6%; left: 0; width: 200%; height: 40%;
+      animation: driftClouds 30s linear infinite;
+    }
+    .cloud {
+      position: absolute; background: rgba(255,255,255,.9);
+      border-radius: 50px; height: 28px;
+      filter: blur(0.5px);
+    }
+    .cloud::before, .cloud::after {
+      content: ''; position: absolute; background: rgba(255,255,255,.9); border-radius: 50%;
+    }
+    .cloud:nth-child(1) { width: 80px; top: 10%; left: 8%; }
+    .cloud:nth-child(1)::before { width: 40px; height: 36px; top: -18px; left: 14px; }
+    .cloud:nth-child(1)::after { width: 30px; height: 28px; top: -10px; left: 40px; }
+    .cloud:nth-child(2) { width: 60px; top: 35%; left: 55%; height: 22px; }
+    .cloud:nth-child(2)::before { width: 30px; height: 28px; top: -14px; left: 10px; }
+    .cloud:nth-child(2)::after { width: 24px; height: 22px; top: -8px; left: 30px; }
+    .cloud:nth-child(3) { width: 50px; top: 20%; left: 80%; height: 18px; }
+    .cloud:nth-child(3)::before { width: 26px; height: 24px; top: -12px; left: 8px; }
+    @keyframes driftClouds { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+    .ground-sunny {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 30%;
+      background: linear-gradient(180deg, #5cb85c, #3a7d3a);
+      border-radius: 60% 60% 0 0 / 20% 20% 0 0;
+    }
+    .flowers { position: absolute; bottom: 0; left: 0; right: 0; height: 30%; }
+    .flower { position: absolute; bottom: 5px; font-size: 18px; }
+
+    /* Butterflies */
+    .butterfly {
+      position: absolute; font-size: 16px;
+      animation: flutter var(--dur, 8s) ease-in-out infinite;
+      animation-delay: var(--delay, 0s);
+    }
+    @keyframes flutter {
+      0%   { transform: translate(0, 0) rotate(0deg); }
+      25%  { transform: translate(30px, -20px) rotate(10deg); }
+      50%  { transform: translate(-10px, -35px) rotate(-5deg); }
+      75%  { transform: translate(20px, -10px) rotate(8deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
+
+    /* Grass blades */
+    .grass {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 8%;
+      display: flex; align-items: flex-end;
+      overflow: hidden;
+    }
+    .blade {
+      width: 4px; height: 100%;
+      background: #2d8a2d;
+      border-radius: 2px 2px 0 0;
+      transform-origin: bottom center;
+      animation: grassSway 3s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    @keyframes grassSway {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(3deg); }
+    }
+
+    /* ─── Scene 2: Sunset ─── */
+    .scene-sunset {
+      background: linear-gradient(180deg, #0f0c29 0%, #302b63 15%, #24243e 25%, #c0392b 50%, #e67e22 70%, #f39c12 85%, #1a1a2e 100%);
+    }
+    .sunset-sun {
+      position: absolute; bottom: 28%; left: 50%; transform: translateX(-50%);
+      width: 85px; height: 85px;
+      background: radial-gradient(circle, #FFD700 20%, #FF6347 60%, transparent 100%);
+      border-radius: 50%;
+      animation: sunsetGlow 4s ease-in-out infinite;
+    }
+    @keyframes sunsetGlow {
+      0%, 100% { opacity: .85; transform: translateX(-50%) scale(1); }
+      50% { opacity: 1; transform: translateX(-50%) scale(1.06); }
+    }
+    .water {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 28%;
+      background: linear-gradient(180deg, rgba(255,99,71,.25), rgba(26,26,46,.85));
+      overflow: hidden;
+    }
+    .water-shimmer {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 60px; height: 100%;
+      background: linear-gradient(180deg, rgba(255,215,0,.25), transparent);
+      filter: blur(6px);
+      animation: waterShimmer 3s ease-in-out infinite;
+    }
+    @keyframes waterShimmer {
+      0%, 100% { opacity: .3; width: 60px; }
+      50% { opacity: .6; width: 90px; }
+    }
+    .water-ripple {
+      position: absolute; width: 100%; height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 8px,
+        rgba(255,255,255,.03) 8px,
+        rgba(255,255,255,.03) 10px
+      );
+      animation: ripple 4s ease-in-out infinite;
+    }
+    @keyframes ripple {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    .stars-sunset { position: absolute; top: 0; left: 0; right: 0; height: 35%; }
+    .star-s {
+      position: absolute; width: 3px; height: 3px;
+      background: #fff; border-radius: 50%;
+      animation: twinkle 2s ease-in-out infinite;
+    }
+    @keyframes twinkle { 0%, 100% { opacity: .2; } 50% { opacity: 1; } }
+
+    /* Shooting star */
+    .shooting-star {
+      position: absolute;
+      width: 3px; height: 3px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 6px 2px rgba(255,255,255,.6);
+      animation: shoot 4s linear infinite;
+      opacity: 0;
+    }
+    .shooting-star::after {
+      content: ''; position: absolute;
+      top: 50%; right: 100%;
+      width: 40px; height: 1px;
+      background: linear-gradient(to left, rgba(255,255,255,.6), transparent);
+    }
+    @keyframes shoot {
+      0%  { transform: translate(0,0) rotate(-35deg); opacity: 0; }
+      5%  { opacity: 1; }
+      15% { opacity: 1; }
+      20% { transform: translate(-200px, 120px) rotate(-35deg); opacity: 0; }
+      100%{ opacity: 0; }
+    }
+
+    /* ─── Scene 3: Dinner ─── */
+    .scene-dinner {
+      background: linear-gradient(180deg, #0d0521 0%, #1a0a35 40%, #2d1b4e 70%, #3d2b5e 100%);
+    }
+    .candle-glow {
+      position: absolute; top: 25%; left: 50%; transform: translateX(-50%);
+      width: 220px; height: 220px;
+      background: radial-gradient(circle, rgba(255,165,0,.12) 0%, rgba(255,140,0,.06) 40%, transparent 70%);
+      animation: candleFlicker 2s ease-in-out infinite;
+    }
+    @keyframes candleFlicker {
+      0%, 100% { opacity: .7; transform: translateX(-50%) scale(1); }
+      25% { opacity: 1; transform: translateX(-50%) scale(1.03); }
+      50% { opacity: .85; transform: translateX(-50%) scale(.97); }
+      75% { opacity: .95; transform: translateX(-50%) scale(1.02); }
+    }
+    .table {
+      position: absolute; bottom: 22%; left: 50%; transform: translateX(-50%);
+      width: 60%; height: 8px;
+      background: linear-gradient(90deg, #6d3a0a, #8B4513, #6d3a0a);
+      border-radius: 4px;
+      box-shadow: 0 4px 15px rgba(0,0,0,.5);
+    }
+    .table-leg {
+      position: absolute; bottom: -30px; width: 8px; height: 30px;
+      background: #5a2d06; border-radius: 2px;
+    }
+    .table-items {
+      position: absolute; bottom: 26%; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 16px; font-size: 22px;
+    }
+    .candle-flame {
+      position: absolute; bottom: 28%; left: 50%; transform: translateX(-50%);
+      font-size: 18px;
+      animation: candleFlicker 1.2s ease-in-out infinite;
+    }
+    .dinner-sparkles { position: absolute; top: 5%; left: 0; right: 0; bottom: 40%; }
+    .sparkle {
+      position: absolute; font-size: 10px; color: rgba(255,215,0,.6);
+      animation: twinkle 2.5s ease-in-out infinite;
+    }
+    /* Musical notes */
+    .music-note {
+      position: absolute; font-size: 16px; opacity: 0;
+      animation: noteFloat 5s ease-in-out infinite;
+      color: rgba(255,215,0,.4);
+    }
+    @keyframes noteFloat {
+      0%   { opacity: 0; transform: translate(0, 0) rotate(0deg); }
+      20%  { opacity: .5; }
+      80%  { opacity: .3; }
+      100% { opacity: 0; transform: translate(20px, -60px) rotate(20deg); }
+    }
+
+    /* ─── Scene 4: Travel ─── */
+    .scene-travel {
+      background: linear-gradient(180deg, #0984e3 0%, #74b9ff 45%, #dfe6e9 75%, #b2bec3 100%);
+    }
+    .landmarks {
+      position: absolute; bottom: 15%; left: 0; right: 0;
+      display: flex; justify-content: space-around; align-items: flex-end;
+      padding: 0 12px;
+    }
+    .landmark {
+      font-size: 34px; opacity: 0;
+      animation: landmarkAppear 1s ease forwards;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,.2));
+    }
+    .active .landmark:nth-child(1) { animation-delay: 0.3s; }
+    .active .landmark:nth-child(2) { animation-delay: 0.8s; }
+    .active .landmark:nth-child(3) { animation-delay: 1.3s; }
+    .active .landmark:nth-child(4) { animation-delay: 1.8s; }
+    .active .landmark:nth-child(5) { animation-delay: 2.3s; }
+    @keyframes landmarkAppear {
+      0% { opacity: 0; transform: translateY(20px) scale(.6); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .airplane {
+      position: absolute; top: 16%; font-size: 28px;
+      animation: fly 7s linear infinite;
+      filter: drop-shadow(2px 2px 2px rgba(0,0,0,.2));
+    }
+    @keyframes fly {
+      0%   { left: -12%; transform: rotate(-8deg) scaleX(-1); }
+      100% { left: 112%; transform: rotate(-8deg) scaleX(-1); }
+    }
+    .travel-ground {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 15%;
+      background: linear-gradient(180deg, #b2bec3, #636e72);
+    }
+    /* Moving clouds for travel */
+    .travel-clouds {
+      position: absolute; top: 5%; left: 0; width: 200%; height: 35%;
+      animation: driftClouds 20s linear infinite;
+    }
+
+    /* ─── Scene 5: Rainy Day at Home ─── */
+    .scene-rainy {
+      background: linear-gradient(180deg, #2d3436 0%, #636e72 20%, #2d3436 50%, #1a1a2e 100%);
+    }
+    .rain-container {
+      position: absolute; inset: 0; overflow: hidden;
+    }
+    .raindrop {
+      position: absolute; top: -10px;
+      width: 2px; background: rgba(174,194,224,.4);
+      border-radius: 0 0 2px 2px;
+      animation: rain linear infinite;
+    }
+    @keyframes rain {
+      0%   { transform: translateY(-10px); opacity: .8; }
+      100% { transform: translateY(110vh); opacity: .2; }
+    }
+    .window-frame {
+      position: absolute; top: 8%; left: 50%; transform: translateX(-50%);
+      width: 52%; aspect-ratio: 1.4;
+      border: 7px solid #8B6914;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #636e72, #4a5568);
+      box-shadow: inset 0 0 30px rgba(255,165,0,.05), 0 0 20px rgba(0,0,0,.3);
+      overflow: hidden;
+    }
+    .window-frame::before {
+      content: ''; position: absolute;
+      top: 0; left: 50%; width: 7px; height: 100%;
+      background: #8B6914; transform: translateX(-50%);
+    }
+    .window-frame::after {
+      content: ''; position: absolute;
+      top: 50%; left: 0; width: 100%; height: 7px;
+      background: #8B6914; transform: translateY(-50%);
+    }
+    .cozy-floor {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 30%;
+      background: linear-gradient(180deg, #5a3e2b, #4a3020);
+    }
+    .rug {
+      position: absolute; bottom: 3%; left: 50%; transform: translateX(-50%);
+      width: 55%; height: 30%;
+      background: radial-gradient(ellipse, #c0392b, #8B2500);
+      border-radius: 50%;
+      opacity: .6;
+    }
+    .cozy-items {
+      position: absolute; bottom: 32%; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 28px; font-size: 24px;
+    }
+    .steam {
+      position: absolute; font-size: 11px; opacity: 0;
+      animation: steamRise 2s ease-in-out infinite;
+      color: rgba(255,255,255,.4);
+    }
+    @keyframes steamRise {
+      0% { opacity: 0; transform: translateY(0) scale(.8); }
+      50% { opacity: .5; }
+      100% { opacity: 0; transform: translateY(-18px) scale(1.2); }
+    }
+    /* Lightning flash */
+    .lightning {
+      position: absolute; inset: 0;
+      background: rgba(255,255,255,.08);
+      opacity: 0;
+      animation: lightning 8s ease-in-out infinite;
+    }
+    @keyframes lightning {
+      0%, 95%, 100% { opacity: 0; }
+      96% { opacity: 1; }
+      97% { opacity: 0; }
+      98% { opacity: .6; }
+    }
+    /* Warm glow from inside */
+    .warm-glow {
+      position: absolute; bottom: 28%; left: 50%; transform: translateX(-50%);
+      width: 80%; height: 50%;
+      background: radial-gradient(ellipse at bottom, rgba(255,165,0,.06), transparent 60%);
+      pointer-events: none;
+    }
+
+    /* ─── Scene 6: Valentine Finale ─── */
+    .scene-finale {
+      background: linear-gradient(180deg, #0d0521 0%, #1a0a35 30%, #2d1654 60%, #e74c7a 100%);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+    }
+    .big-heart {
+      font-size: 80px;
+      animation: bigHeartBeat 1.2s ease-in-out infinite;
+      filter: drop-shadow(0 0 30px rgba(255,77,109,.6));
+    }
+    @keyframes bigHeartBeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.2); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.12); }
+    }
+    .finale-text {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(1.3rem, 5vw, 2.2rem);
+      color: #fff;
+      margin-top: 10px;
+      text-shadow: 0 0 25px rgba(255,107,138,.6), 0 0 50px rgba(255,107,138,.3);
+      text-align: center;
+      padding: 0 20px;
+    }
+    .finale-sub {
+      font-size: clamp(.8rem, 2.5vw, .95rem);
+      color: #f5c6d0;
+      margin-top: 6px;
+      opacity: .85;
+      font-weight: 500;
+    }
+    .finale-hearts {
+      position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+    }
+    .finale-hearts span {
+      position: absolute; font-size: 20px;
+      animation: finaleFloat 4s ease-in-out infinite;
+    }
+    @keyframes finaleFloat {
+      0%   { transform: translateY(100%) scale(.4) rotate(0deg); opacity: 0; }
+      20%  { opacity: .7; }
+      80%  { opacity: .5; }
+      100% { transform: translateY(-130%) scale(1.3) rotate(360deg); opacity: 0; }
+    }
+
+    /* Fireworks */
+    .firework {
+      position: absolute;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+    }
+    .firework-particle {
+      position: absolute;
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      animation: fireworkBurst 1.5s ease-out forwards;
+    }
+    @keyframes fireworkBurst {
+      0% { transform: translate(0,0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+    }
+
+    /* Confetti */
+    .confetti-piece {
+      position: absolute;
+      width: 8px; height: 8px;
+      opacity: 0;
+      animation: confettiFall var(--dur, 4s) ease-in infinite;
+      animation-delay: var(--delay, 0s);
+    }
+    @keyframes confettiFall {
+      0%   { opacity: 0; transform: translateY(-20px) rotate(0deg); }
+      10%  { opacity: 1; }
+      100% { opacity: 0; transform: translateY(120vh) rotate(720deg); }
+    }
+
+    /* ═══════════════════════════════════════════
+       BEAD 7: RESPONSIVE
+    ═══════════════════════════════════════════ */
+    @media (max-width: 600px) {
+      .lego { width: 38px; }
+      .lego-head { width: 26px; height: 26px; }
+      .lego-head::before { width: 12px; height: 8px; top: -8px; }
+      .lego-eyes { width: 14px; top: 8px; }
+      .lego-eye { width: 4px; height: 4px; }
+      .lego-smile { width: 8px; height: 4px; bottom: 3px; }
+      .lego-body { width: 30px; height: 24px; }
+      .lego-arm { width: 7px; height: 17px; }
+      .lego-arms { width: calc(100% + 14px); left: -7px; }
+      .lego-leg { width: 12px; height: 17px; }
+      .lego-hair { height: 11px; top: -6px; }
+      .lego-char2 .lego-hair { height: 18px; top: -9px; }
+      .stage-glass { padding: 8px; border-radius: 18px; }
+      .stage { border-radius: 12px; }
+      .header { padding: 6px 16px 4px; }
+      .landmark { font-size: 26px; }
+      .table-items { font-size: 18px; gap: 12px; }
+      .cozy-items { font-size: 20px; gap: 20px; }
+      .big-heart { font-size: 60px; }
+      .controls { margin: 16px auto 16px; }
+      .btn { padding: 12px 32px; font-size: .95rem; }
+    }
+
+    @media (max-width: 380px) {
+      .lego { width: 32px; }
+      .lego-head { width: 22px; height: 22px; }
+      .lego-body { width: 26px; height: 20px; }
+      .lego-leg { width: 10px; height: 14px; }
+      .landmark { font-size: 22px; }
+    }
+
+    /* ═══════════════════════════════════════════
+       INITIAL LOAD ANIMATION
+    ═══════════════════════════════════════════ */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(15px);
+      animation: fadeInUp .8s ease forwards;
+    }
+    .fade-in:nth-child(2) { animation-delay: .15s; }
+    .fade-in:nth-child(3) { animation-delay: .3s; }
+    .fade-in:nth-child(4) { animation-delay: .45s; }
+    @keyframes fadeInUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating hearts background -->
+  <div class="hearts-bg" id="heartsBg"></div>
+
+  <!-- Header -->
+  <div class="header fade-in">
+    <h1>A Lego Love Story</h1>
+    <p>Built brick by brick, with love</p>
+  </div>
+
+  <!-- Animation Stage -->
+  <div class="stage-wrapper fade-in">
+    <div class="stage-glass">
+      <div class="stage" id="stage">
+
+        <!-- Scene 1: Sunny Walk -->
+        <div class="scene scene-sunny active" id="scene1">
+          <div class="sun"></div>
+          <div class="sun-rays"></div>
+          <div class="clouds">
+            <div class="cloud"></div>
+            <div class="cloud"></div>
+            <div class="cloud"></div>
+          </div>
+          <div class="ground-sunny"></div>
+          <div class="flowers">
+            <span class="flower" style="left:6%;bottom:8%">&#127800;</span>
+            <span class="flower" style="left:18%;bottom:12%">&#127803;</span>
+            <span class="flower" style="left:35%;bottom:6%">&#127804;</span>
+            <span class="flower" style="left:52%;bottom:14%">&#127803;</span>
+            <span class="flower" style="left:70%;bottom:7%">&#127800;</span>
+            <span class="flower" style="left:88%;bottom:11%">&#127804;</span>
+          </div>
+          <span class="butterfly" style="top:25%;left:20%;--dur:7s;--delay:0s">&#129419;</span>
+          <span class="butterfly" style="top:35%;left:65%;--dur:9s;--delay:2s">&#129419;</span>
+          <span class="butterfly" style="top:20%;left:45%;--dur:6s;--delay:4s">&#129419;</span>
+          <div class="lego-couple walking">
+            <div class="lego lego-char1">
+              <div class="lego-head">
+                <div class="lego-hair"></div>
+                <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
+                <div class="lego-smile"></div>
+              </div>
+              <div class="lego-body">
+                <div class="lego-arms"><span class="lego-arm"></span><span class="lego-arm"></span></div>
+              </div>
+              <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
+            </div>
+            <span class="couple-heart">&#9829;</span>
+            <div class="lego lego-char2">
+              <div class="lego-head">
+                <div class="lego-hair"></div>
+                <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
+                <div class="lego-smile"></div>
+              </div>
+              <div class="lego-body">
+                <div class="lego-arms"><span class="lego-arm"></span><span class="lego-arm"></span></div>
+              </div>
+              <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scene 2: Sunset -->
+        <div class="scene scene-sunset" id="scene2">
+          <div class="stars-sunset">
+            <span class="star-s" style="top:5%;left:8%"></span>
+            <span class="star-s" style="top:8%;left:25%;animation-delay:.5s"></span>
+            <span class="star-s" style="top:3%;left:42%;animation-delay:1s"></span>
+            <span class="star-s" style="top:12%;left:65%;animation-delay:.3s"></span>
+            <span class="star-s" style="top:6%;left:80%;animation-delay:1.5s"></span>
+            <span class="star-s" style="top:10%;left:92%;animation-delay:.8s"></span>
+          </div>
+          <div class="shooting-star" style="top:8%;left:70%;animation-delay:1s"></div>
+          <div class="shooting-star" style="top:15%;left:40%;animation-delay:5s"></div>
+          <div class="sunset-sun"></div>
+          <div class="water">
+            <div class="water-shimmer"></div>
+            <div class="water-ripple"></div>
+          </div>
+          <div class="lego-couple swaying" style="bottom:30%">
+            <div class="lego lego-char1">
+              <div class="lego-head">
+                <div class="lego-hair"></div>
+                <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
+                <div class="lego-smile"></div>
+              </div>
+              <div class="lego-body">
+                <div class="lego-arms"><span class="lego-arm"></span><span class="lego-arm"></span></div>
+              </div>
+              <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
+            </div>
+            <span class="couple-heart">&#9829;</span>
+            <div class="lego lego-char2">
+              <div class="lego-head">
+                <div class="lego-hair"></div>
+                <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
+                <div class="lego-smile"></div>
+              </div>
+              <div class="lego-body">
+                <div class="lego-arms"><span class="lego-arm"></span><span class="lego-arm"></span></div>
+              </div>
+              <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scene 3: Dinner -->
+        <div class="scene scene-dinner" id="scene3">
+          <div class="candle-glow"></div>
+          <div class="dinner-sparkles">
+            <span class="sparkle" style="top:12%;left:18%;animation-delay:0s">&#10022;</span>
+            <span class="sparkle" style="top:22%;left:72%;animation-delay:.7s">&#10022;</span>
+            <span class="sparkle" style="top:8%;left:48%;animation-delay:1.4s">&#10022;</span>
+            <span class="sparkle" style="top:30%;left:32%;animation-delay:.3s">&#10022;</span>
+            <span class="sparkle" style="top:18%;left:85%;animation-delay:1s">&#10022;</span>
+            <span class="sparkle" style="top:5%;left:60%;animation-delay:1.8s">&#10022;</span>
+          </div>
+          <span class="music-note" style="top:20%;left:15%;animation-delay:0s">&#9835;</span>
+          <span class="music-note" style="top:30%;left:78%;animation-delay:1.5s">&#9834;</span>
+          <span class="music-note" style="top:15%;left:55%;animation-delay:3s">&#9835;</span>
+          <span class="music-note" style="top:25%;left:35%;animation-delay:2s">&#9834;</span>
+          <div class="candle-flame">&#128367;&#65039;</div>
+          <div class="table">
+            <div class="table-leg" style="left:10%"></div>
+            <div class="table-leg" style="right:10%"></div>
+          </div>
+          <div class="table-items">
+            <span>&#127839;</span>
+            <span>&#127863;</span>
+            <span>&#127856;</span>
+          </div>
+          <div class="lego-couple" style="bottom:30%">
+            <div class="lego lego-char1">
+              <div class="lego-head">
+                <div class="lego-hair"></div>
+                <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
+                <div class="lego-smile"></div>
+              </div>
+              <div class="lego-body">
+                <div class="lego-arms"><span class="lego-arm"></span><span class="lego-arm"></span></div>
+              </div>
+              <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
+            </div>
+            <span class="couple-heart">&#9829;</span>
+            <div class="lego lego-char2">
+              <div class="lego-head">
+                <div class="lego-hair"></div>
+                <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
+                <div class="lego-smile"></div>
+              </div>
+              <div class="lego-body">
+                <div class="lego-arms"><span class="lego-arm"></span><span class="lego-arm"></span></div>
+              </div>
+              <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scene 4: Travel -->
+        <div class="scene scene-travel" id="scene4">
+          <div class="travel-clouds clouds">
+            <div class="cloud"></div>
+            <div class="cloud"></div>
+            <div class="cloud"></div>
+          </div>
+          <div class="airplane">&#9992;&#65039;</div>
+          <div class="landmarks">
+            <span class="landmark">&#127987;&#65039;</span>
+            <span class="landmark">&#128508;</span>
+            <span class="landmark">&#127971;</span>
+            <span class="landmark">&#9968;</span>
+            <span class="landmark">&#127960;</span>
+          </div>
+          <div class="travel-ground"></div>
+          <div class="lego-couple walking">
+            <div class="lego lego-char1">
+              <div class="lego-head">
+                <div class="lego-hair"></div>
+                <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
+                <div class="lego-smile"></div>
+              </div>
+              <div class="lego-body" style="background:#e17055;">
+                <div class="lego-arms"><span class="lego-arm" style="background:#e17055;"></span><span class="lego-arm" style="background:#e17055;"></span></div>
+              </div>
+              <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
+            </div>
+            <span class="couple-heart">&#9829;</span>
+            <div class="lego lego-char2">
+              <div class="lego-head">
+                <div class="lego-hair"></div>
+                <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
+                <div class="lego-smile"></div>
+              </div>
+              <div class="lego-body" style="background:#00b894;">
+                <div class="lego-arms"><span class="lego-arm" style="background:#00b894;"></span><span class="lego-arm" style="background:#00b894;"></span></div>
+              </div>
+              <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scene 5: Rainy Day at Home -->
+        <div class="scene scene-rainy" id="scene5">
+          <div class="lightning"></div>
+          <div class="rain-container" id="rainContainer"></div>
+          <div class="window-frame">
+            <div class="rain-container window-rain" id="windowRain"></div>
+          </div>
+          <div class="warm-glow"></div>
+          <div class="cozy-floor">
+            <div class="rug"></div>
+          </div>
+          <div class="cozy-items">
+            <span style="position:relative">
+              &#9749;
+              <span class="steam" style="top:-14px;left:4px;animation-delay:0s">~</span>
+              <span class="steam" style="top:-14px;left:14px;animation-delay:.6s">~</span>
+            </span>
+            <span>&#128218;</span>
+            <span style="position:relative">
+              &#9749;
+              <span class="steam" style="top:-14px;left:4px;animation-delay:.3s">~</span>
+              <span class="steam" style="top:-14px;left:14px;animation-delay:.9s">~</span>
+            </span>
+          </div>
+          <div class="lego-couple swaying" style="bottom:28%">
+            <div class="lego lego-char1">
+              <div class="lego-head">
+                <div class="lego-hair"></div>
+                <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
+                <div class="lego-smile"></div>
+              </div>
+              <div class="lego-body">
+                <div class="lego-arms"><span class="lego-arm"></span><span class="lego-arm"></span></div>
+              </div>
+              <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
+            </div>
+            <span class="couple-heart">&#9829;</span>
+            <div class="lego lego-char2">
+              <div class="lego-head">
+                <div class="lego-hair"></div>
+                <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
+                <div class="lego-smile"></div>
+              </div>
+              <div class="lego-body">
+                <div class="lego-arms"><span class="lego-arm"></span><span class="lego-arm"></span></div>
+              </div>
+              <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scene 6: Valentine Finale -->
+        <div class="scene scene-finale" id="scene6">
+          <div class="finale-hearts" id="finaleHearts"></div>
+          <div id="fireworksCanvas" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;"></div>
+          <div class="big-heart">&#10084;&#65039;</div>
+          <div class="finale-text">Happy Valentine's Day, My Love</div>
+          <div class="finale-sub">Every moment with you is my favorite adventure</div>
+          <div class="lego-couple swaying" style="bottom:8%">
+            <div class="lego lego-char1">
+              <div class="lego-head">
+                <div class="lego-hair"></div>
+                <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
+                <div class="lego-smile"></div>
+              </div>
+              <div class="lego-body">
+                <div class="lego-arms"><span class="lego-arm"></span><span class="lego-arm"></span></div>
+              </div>
+              <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
+            </div>
+            <span class="couple-heart">&#9829;</span>
+            <div class="lego lego-char2">
+              <div class="lego-head">
+                <div class="lego-hair"></div>
+                <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
+                <div class="lego-smile"></div>
+              </div>
+              <div class="lego-body">
+                <div class="lego-arms"><span class="lego-arm"></span><span class="lego-arm"></span></div>
+              </div>
+              <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Narration -->
+  <div class="narration fade-in" id="narration">
+    <div class="narration-inner">
+      <p id="narrationText">Two little Lego hearts found each other one sunny day...</p>
+      <span class="cursor" id="cursor"></span>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls fade-in">
+    <button class="btn" id="playBtn">&#9654; Begin Our Story</button>
+    <div class="progress-container">
+      <div class="progress-dots" id="dots">
+        <span class="dot active" data-scene="0"></span>
+        <span class="dot" data-scene="1"></span>
+        <span class="dot" data-scene="2"></span>
+        <span class="dot" data-scene="3"></span>
+        <span class="dot" data-scene="4"></span>
+        <span class="dot" data-scene="5"></span>
+      </div>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+  </div>
+
+  <script>
+    /* ═══════════════════════════════════════════
+       STORY DATA
+    ═══════════════════════════════════════════ */
+    const story = [
+      {
+        id: 'scene1',
+        text: 'Two little Lego hearts found each other one sunny day... hand in hand, they took their first steps together beneath a golden sky — knowing this was the start of something extraordinary.',
+        duration: 8000
+      },
+      {
+        id: 'scene2',
+        text: 'They watched the sun melt into the horizon, painting the sky in every shade of love... in that gentle silence, their hearts spoke louder than any words ever could.',
+        duration: 8000
+      },
+      {
+        id: 'scene3',
+        text: 'Under candlelight, the world shrunk to just the two of them... every shared laugh, every stolen glance across the table, became a memory they\'d treasure forever.',
+        duration: 8000
+      },
+      {
+        id: 'scene4',
+        text: 'Together they explored the world — from the Eiffel Tower to ancient temples, every new horizon was better because they discovered it side by side. The whole world was their playground.',
+        duration: 8000
+      },
+      {
+        id: 'scene5',
+        text: 'And on rainy days, they\'d build a little world indoors — warm coffee, good books, and the gentle sound of rain on the window... home was never a place. It was each other.',
+        duration: 8000
+      },
+      {
+        id: 'scene6',
+        text: 'Through every sunrise and storm, every adventure and quiet moment — their love only grew stronger, brick by brick. Happy Valentine\'s Day, my love. You are my favorite story. \u2764',
+        duration: 10000
+      }
+    ];
+
+    /* ═══════════════════════════════════════════
+       STATE
+    ═══════════════════════════════════════════ */
+    let currentScene = 0;
+    let isPlaying = false;
+    let sceneTimer = null;
+    let typeTimer = null;
+    let progressTimer = null;
+
+    const scenes = document.querySelectorAll('.scene');
+    const dots = document.querySelectorAll('.dot');
+    const narrationText = document.getElementById('narrationText');
+    const cursor = document.getElementById('cursor');
+    const playBtn = document.getElementById('playBtn');
+    const progressBar = document.getElementById('progressBar');
+
+    /* ═══════════════════════════════════════════
+       BEAD 4: TYPEWRITER EFFECT
+    ═══════════════════════════════════════════ */
+    function typeWriter(text, callback) {
+      clearTimeout(typeTimer);
+      narrationText.textContent = '';
+      cursor.style.display = 'inline-block';
+      let i = 0;
+      const speed = Math.max(22, Math.min(40, 2200 / text.length));
+
+      function type() {
+        if (i < text.length) {
+          narrationText.textContent += text.charAt(i);
+          i++;
+          typeTimer = setTimeout(type, speed);
+        } else {
+          setTimeout(() => {
+            cursor.style.display = 'none';
+            if (callback) callback();
+          }, 800);
+        }
+      }
+      type();
+    }
+
+    /* ═══════════════════════════════════════════
+       BEAD 5: SCENE TRANSITIONS & AUTO-PLAY
+    ═══════════════════════════════════════════ */
+    function showScene(index, autoAdvance) {
+      clearTimeout(sceneTimer);
+      clearTimeout(typeTimer);
+      clearInterval(progressTimer);
+
+      scenes.forEach(s => s.classList.remove('active'));
+      dots.forEach((d, i) => {
+        d.classList.remove('active');
+        if (i < index) d.classList.add('done');
+        else d.classList.remove('done');
+      });
+
+      scenes[index].classList.add('active');
+      dots[index].classList.add('active');
+      currentScene = index;
+
+      // Progress bar
+      const pct = ((index) / (story.length - 1)) * 100;
+      progressBar.style.width = pct + '%';
+
+      // Typewriter narration
+      typeWriter(story[index].text, () => {
+        if (autoAdvance && currentScene < story.length - 1) {
+          // Wait a moment after typing finishes, then advance
+          const remaining = 2500;
+          animateProgress(index, remaining);
+          sceneTimer = setTimeout(() => nextScene(), remaining);
+        } else if (autoAdvance && currentScene === story.length - 1) {
+          // Finale reached
+          progressBar.style.width = '100%';
+          isPlaying = false;
+          playBtn.innerHTML = '&#8635; Replay Our Story';
+          launchFinaleFireworks();
+        }
+      });
+
+      // Launch fireworks on finale
+      if (index === story.length - 1) {
+        launchFinaleFireworks();
+      }
+    }
+
+    function animateProgress(sceneIndex, duration) {
+      const startPct = (sceneIndex / (story.length - 1)) * 100;
+      const endPct = ((sceneIndex + 1) / (story.length - 1)) * 100;
+      const startTime = Date.now();
+
+      progressTimer = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        progressBar.style.width = (startPct + (endPct - startPct) * progress) + '%';
+        if (progress >= 1) clearInterval(progressTimer);
+      }, 50);
+    }
+
+    function nextScene() {
+      if (currentScene < story.length - 1) {
+        showScene(currentScene + 1, true);
+      }
+    }
+
+    function startStory() {
+      if (isPlaying) return;
+      isPlaying = true;
+      playBtn.innerHTML = '&#9646;&#9646; Playing...';
+
+      if (currentScene >= story.length - 1) {
+        currentScene = 0;
+        dots.forEach(d => d.classList.remove('done'));
+        progressBar.style.width = '0%';
+        showScene(0, true);
+      } else {
+        showScene(currentScene, true);
+      }
+    }
+
+    // Play button
+    playBtn.addEventListener('click', () => {
+      if (playBtn.textContent.includes('Replay')) {
+        currentScene = story.length; // force reset
+      }
+      startStory();
+    });
+
+    // Dot navigation
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => {
+        clearTimeout(sceneTimer);
+        clearTimeout(typeTimer);
+        clearInterval(progressTimer);
+        isPlaying = false;
+        playBtn.innerHTML = '&#9654; Continue Story';
+        showScene(i, false);
+      });
+    });
+
+    /* ═══════════════════════════════════════════
+       BEAD 1: BACKGROUND HEARTS
+    ═══════════════════════════════════════════ */
+    function createBackgroundHearts() {
+      const container = document.getElementById('heartsBg');
+      const hearts = ['\u2764', '\u2661', '\u2765', '\u2763'];
+      const count = window.innerWidth < 600 ? 15 : 25;
+      for (let i = 0; i < count; i++) {
+        const span = document.createElement('span');
+        span.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+        span.style.left = Math.random() * 100 + '%';
+        span.style.fontSize = (10 + Math.random() * 18) + 'px';
+        span.style.setProperty('--delay', (Math.random() * 10) + 's');
+        span.style.setProperty('--dur', (7 + Math.random() * 7) + 's');
+        span.style.color = `hsl(${340 + Math.random() * 30}, ${65 + Math.random() * 30}%, ${55 + Math.random() * 25}%)`;
+        container.appendChild(span);
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       BEAD 3: RAIN EFFECT
+    ═══════════════════════════════════════════ */
+    function createRain() {
+      const container = document.getElementById('rainContainer');
+      const dropCount = window.innerWidth < 600 ? 35 : 60;
+      for (let i = 0; i < dropCount; i++) {
+        const drop = document.createElement('div');
+        drop.className = 'raindrop';
+        drop.style.left = Math.random() * 100 + '%';
+        drop.style.height = (8 + Math.random() * 14) + 'px';
+        drop.style.animationDuration = (0.35 + Math.random() * 0.35) + 's';
+        drop.style.animationDelay = Math.random() * 2 + 's';
+        container.appendChild(drop);
+      }
+      const windowRain = document.getElementById('windowRain');
+      const windowDrops = window.innerWidth < 600 ? 18 : 30;
+      for (let i = 0; i < windowDrops; i++) {
+        const drop = document.createElement('div');
+        drop.className = 'raindrop';
+        drop.style.left = Math.random() * 100 + '%';
+        drop.style.height = (5 + Math.random() * 10) + 'px';
+        drop.style.animationDuration = (0.3 + Math.random() * 0.35) + 's';
+        drop.style.animationDelay = Math.random() * 2 + 's';
+        drop.style.background = 'rgba(174,194,224,.35)';
+        windowRain.appendChild(drop);
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       BEAD 6: FINALE EFFECTS
+    ═══════════════════════════════════════════ */
+    function createFinaleHearts() {
+      const container = document.getElementById('finaleHearts');
+      const count = window.innerWidth < 600 ? 12 : 22;
+      for (let i = 0; i < count; i++) {
+        const span = document.createElement('span');
+        span.textContent = '\u2764';
+        span.style.left = Math.random() * 100 + '%';
+        span.style.bottom = '-20px';
+        span.style.fontSize = (12 + Math.random() * 22) + 'px';
+        span.style.animationDelay = Math.random() * 4 + 's';
+        span.style.animationDuration = (3 + Math.random() * 3) + 's';
+        span.style.color = `hsl(${340 + Math.random() * 30}, ${70 + Math.random() * 25}%, ${55 + Math.random() * 30}%)`;
+        container.appendChild(span);
+      }
+    }
+
+    function launchFinaleFireworks() {
+      const canvas = document.getElementById('fireworksCanvas');
+      canvas.innerHTML = '';
+
+      function createFirework() {
+        const x = 15 + Math.random() * 70;
+        const y = 10 + Math.random() * 50;
+        const colors = ['#ff6b8a', '#ffa07a', '#FFD700', '#ff4d6d', '#c4a7e7', '#5b86e5', '#ff9ff3', '#feca57'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const particleCount = 12 + Math.floor(Math.random() * 8);
+
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'firework-particle';
+          particle.style.left = x + '%';
+          particle.style.top = y + '%';
+          particle.style.background = color;
+          particle.style.boxShadow = `0 0 6px ${color}`;
+
+          const angle = (Math.PI * 2 / particleCount) * i;
+          const dist = 30 + Math.random() * 50;
+          particle.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+          particle.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+          particle.style.animationDelay = (Math.random() * 0.2) + 's';
+
+          canvas.appendChild(particle);
+
+          // Clean up
+          setTimeout(() => particle.remove(), 2000);
+        }
+      }
+
+      // Launch several fireworks over time
+      let count = 0;
+      const maxFireworks = 8;
+      function launchNext() {
+        if (count < maxFireworks) {
+          createFirework();
+          count++;
+          setTimeout(launchNext, 400 + Math.random() * 600);
+        }
+      }
+      launchNext();
+
+      // Create confetti
+      const confettiColors = ['#ff6b8a', '#ffa07a', '#FFD700', '#5b86e5', '#c4a7e7', '#ff4d6d', '#00b894', '#feca57'];
+      const confettiCount = window.innerWidth < 600 ? 20 : 35;
+      for (let i = 0; i < confettiCount; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random() * 100 + '%';
+        piece.style.top = '-10px';
+        piece.style.background = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+        piece.style.setProperty('--dur', (3 + Math.random() * 3) + 's');
+        piece.style.setProperty('--delay', (Math.random() * 3) + 's');
+        piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        piece.style.width = (5 + Math.random() * 6) + 'px';
+        piece.style.height = (5 + Math.random() * 6) + 'px';
+        canvas.appendChild(piece);
+
+        setTimeout(() => piece.remove(), 8000);
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       INIT
+    ═══════════════════════════════════════════ */
+    createBackgroundHearts();
+    createRain();
+    createFinaleHearts();
+
+    // Show initial narration
+    narrationText.textContent = story[0].text.substring(0, 55) + '...';
+    cursor.style.display = 'none';
+  </script>
+</body>
+</html>
