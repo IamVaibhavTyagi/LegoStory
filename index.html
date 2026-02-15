@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>A Lego Love Story</title>
+  <title>Vai &amp; Vams</title>
   <meta name="description" content="A Valentine's Day love story told through Lego characters" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#10084;</text></svg>">
   <style>
@@ -63,6 +63,43 @@
       50%  { opacity: .3; }
       90%  { opacity: .15; }
       100% { opacity: 0; transform: translateY(-110vh) rotate(720deg) scale(1.1); }
+    }
+
+    /* Background fireworks */
+    .bg-fireworks {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .bg-fw {
+      position: absolute; width: 6px; height: 6px; border-radius: 50%;
+      opacity: 0;
+    }
+    .bg-fw.burst {
+      animation: fwBurst 2s ease-out forwards;
+    }
+    .bg-fw.burst::before, .bg-fw.burst::after,
+    .bg-fw.burst .p1, .bg-fw.burst .p2, .bg-fw.burst .p3,
+    .bg-fw.burst .p4, .bg-fw.burst .p5, .bg-fw.burst .p6 {
+      content: ''; position: absolute; width: 5px; height: 5px;
+      border-radius: 50%; background: inherit;
+      animation: fwParticle 2s ease-out forwards;
+    }
+    .bg-fw.burst::before  { --fx: -60px; --fy: -100px; }
+    .bg-fw.burst::after   { --fx: 60px;  --fy: -100px; }
+    .bg-fw.burst .p1      { --fx: -100px; --fy: -30px; }
+    .bg-fw.burst .p2      { --fx: 100px;  --fy: -30px; }
+    .bg-fw.burst .p3      { --fx: -80px; --fy: 60px;  }
+    .bg-fw.burst .p4      { --fx: 80px;  --fy: 60px;  }
+    .bg-fw.burst .p5      { --fx: 0;     --fy: -110px; }
+    .bg-fw.burst .p6      { --fx: 0;     --fy: 70px;  }
+    @keyframes fwBurst {
+      0%   { opacity: 0; transform: scale(0); }
+      10%  { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(.3); }
+    }
+    @keyframes fwParticle {
+      0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--fx), var(--fy)) scale(0); }
     }
 
     /* ═══════════════════════════════════════════
@@ -203,6 +240,17 @@
     .btn:hover { transform: scale(1.05); box-shadow: 0 6px 32px rgba(255,77,109,.5); }
     .btn:active { transform: scale(.97); }
 
+    /* Music toggle button */
+    .music-btn {
+      background: linear-gradient(135deg, #8e44ad, #9b59b6);
+      box-shadow: 0 4px 24px rgba(142,68,173,.35);
+      padding: 14px 24px;
+      font-size: .95rem;
+      margin-left: 10px;
+    }
+    .music-btn:hover { box-shadow: 0 6px 32px rgba(142,68,173,.5); }
+    .music-btn.playing { background: linear-gradient(135deg, #27ae60, #2ecc71); box-shadow: 0 4px 24px rgba(39,174,96,.35); }
+
     /* Progress bar */
     .progress-container {
       margin-top: 16px;
@@ -287,8 +335,43 @@
       position: absolute; top: -8px; left: -2px; right: -2px; height: 14px;
       border-radius: 8px 8px 0 0; z-index: 2;
     }
-    .lego-char1 .lego-hair { background: #5a3825; }
-    .lego-char2 .lego-hair { background: #1a0d08; height: 22px; top: -10px; border-radius: 12px 12px 3px 3px; }
+    .lego-char1 .lego-hair {
+      background: #1a1a1a; height: 14px; top: -10px; left: -3px; right: -3px;
+      border-radius: 10px 10px 0 0; z-index: 3;
+    }
+    .lego-char1 .lego-head::before { background: #1a1a1a; border-color: #111; z-index: 2; }
+    /* Ponytail — connected to hair, flows down left */
+    .lego-char1 .lego-hair::before {
+      content: ''; position: absolute;
+      top: 4px; left: -7px;
+      width: 10px; height: 48px;
+      background: linear-gradient(180deg, #1a1a1a, #222);
+      border-radius: 6px 4px 4px 8px;
+      z-index: -1;
+    }
+    /* Side bangs — one on each side of face */
+    .lego-char1 .lego-hair::after {
+      content: ''; position: absolute;
+      top: 8px; left: -4px;
+      width: 8px; height: 14px;
+      background: #1a1a1a;
+      border-radius: 0 0 4px 6px;
+      z-index: 4;
+      box-shadow: 30px 0 0 0 #1a1a1a;
+    }
+    .lego-char2 .lego-hair {
+      background: #2c1a0e; height: 12px; top: -8px; left: -3px; right: -3px;
+      border-radius: 8px 8px 1px 1px; z-index: 3;
+    }
+    .lego-char2 .lego-head::before { background: #2c1a0e; border-color: #221408; z-index: 2; }
+    /* Side part — swept right */
+    .lego-char2 .lego-hair::before {
+      content: ''; position: absolute;
+      top: -3px; left: 30%; right: 0;
+      height: 8px;
+      background: #2c1a0e;
+      border-radius: 2px 10px 2px 0;
+    }
 
     /* Body */
     .lego-body {
@@ -308,6 +391,16 @@
     .lego-arm {
       width: 8px; height: 20px; border-radius: 4px;
       transition: transform .3s;
+      position: relative;
+    }
+    /* Hands — yellow circles at end of arms */
+    .lego-arm::after {
+      content: ''; position: absolute;
+      bottom: -3px; left: 50%; transform: translateX(-50%);
+      width: 7px; height: 7px;
+      background: #f0c040;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,.1);
     }
     .lego-char1 .lego-arm { background: var(--char1-color); border: 1.5px solid rgba(0,0,0,.1); }
     .lego-char2 .lego-arm { background: var(--char2-color); border: 1.5px solid rgba(0,0,0,.1); }
@@ -319,6 +412,15 @@
     .lego-leg {
       width: 14px; height: 20px; border-radius: 3px;
       transform-origin: top center;
+      position: relative;
+    }
+    /* Feet — dark shoes at bottom of legs */
+    .lego-leg::after {
+      content: ''; position: absolute;
+      bottom: -2px; left: -1px;
+      width: 16px; height: 5px;
+      background: #2d2d2d;
+      border-radius: 2px 4px 3px 2px;
     }
     .lego-char1 .lego-leg { background: #4a4a8a; border: 1.5px solid rgba(0,0,0,.1); }
     .lego-char2 .lego-leg { background: #4a4a8a; border: 1.5px solid rgba(0,0,0,.1); }
@@ -434,9 +536,111 @@
       position: absolute; bottom: 0; left: 0; right: 0; height: 30%;
       background: linear-gradient(180deg, #5cb85c, #3a7d3a);
       border-radius: 60% 60% 0 0 / 20% 20% 0 0;
+      z-index: 0;
     }
     .flowers { position: absolute; bottom: 0; left: 0; right: 0; height: 30%; }
     .flower { position: absolute; bottom: 5px; font-size: 18px; }
+
+    /* Park path */
+    .park-path {
+      position: absolute; bottom: 10%; left: 0; right: 0; height: 10%;
+      background: linear-gradient(180deg, #c8a96e, #b8975a);
+      border-radius: 50% 50% 0 0 / 20% 20% 0 0;
+      z-index: 5;
+    }
+    .park-path::after {
+      content: ''; position: absolute;
+      top: 45%; left: 0; right: 0; height: 2px;
+      background: repeating-linear-gradient(90deg, rgba(255,255,255,.2) 0px, rgba(255,255,255,.2) 14px, transparent 14px, transparent 28px);
+    }
+
+    /* Scrolling park background */
+    .park-bg-scroll {
+      position: absolute; bottom: 18%; left: 0;
+      width: 200%; height: 55%;
+      animation: parkScroll 18s linear infinite;
+      z-index: 1;
+    }
+    @keyframes parkScroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* CSS Trees */
+    .css-tree {
+      position: absolute; bottom: 0;
+      width: 50px;
+    }
+    .css-tree .tree-top {
+      width: 50px; height: 55px;
+      background: radial-gradient(ellipse at 50% 60%, #2ecc71, #27ae60);
+      border-radius: 50% 50% 45% 45%;
+      margin: 0 auto;
+      box-shadow: inset -5px -5px 10px rgba(0,0,0,.1), 0 2px 8px rgba(0,0,0,.15);
+    }
+    .css-tree .tree-trunk {
+      width: 12px; height: 22px;
+      background: linear-gradient(90deg, #6d4c2a, #8B5E3C, #6d4c2a);
+      margin: -2px auto 0;
+      border-radius: 0 0 3px 3px;
+    }
+    .css-tree.tall .tree-top {
+      width: 60px; height: 70px;
+      background: radial-gradient(ellipse at 50% 60%, #27ae60, #1e8449);
+    }
+    .css-tree.tall .tree-trunk {
+      width: 14px; height: 28px;
+    }
+
+    /* CSS Fountain */
+    .css-fountain {
+      position: absolute; bottom: 0;
+      width: 55px;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .fountain-base {
+      width: 50px; height: 10px;
+      background: linear-gradient(180deg, #95a5a6, #7f8c8d);
+      border-radius: 4px;
+      order: 4;
+    }
+    .fountain-pillar {
+      width: 10px; height: 22px;
+      background: linear-gradient(90deg, #bdc3c7, #95a5a6);
+      order: 3;
+    }
+    .fountain-bowl {
+      width: 36px; height: 12px;
+      background: linear-gradient(180deg, #bdc3c7, #95a5a6);
+      border-radius: 50% 50% 4px 4px;
+      order: 2;
+    }
+    .fountain-water {
+      width: 3px; height: 16px;
+      background: linear-gradient(180deg, rgba(116,185,255,.8), rgba(116,185,255,.2));
+      border-radius: 2px;
+      order: 1;
+      animation: fountainSpray 1.5s ease-in-out infinite;
+    }
+    .fountain-water.w2 {
+      position: absolute; top: 0;
+      width: 16px; height: 8px;
+      background: none;
+      border-left: 2px solid rgba(116,185,255,.5);
+      border-right: 2px solid rgba(116,185,255,.5);
+      border-top: none;
+      border-bottom: 2px solid rgba(116,185,255,.4);
+      border-radius: 0 0 50% 50%;
+      animation: fountainSplash 1.5s ease-in-out infinite;
+    }
+    @keyframes fountainSpray {
+      0%, 100% { height: 14px; opacity: .7; }
+      50% { height: 20px; opacity: 1; }
+    }
+    @keyframes fountainSplash {
+      0%, 100% { width: 14px; opacity: .4; }
+      50% { width: 20px; opacity: .7; }
+    }
 
     /* Butterflies */
     .butterfly {
@@ -471,183 +675,509 @@
       50% { transform: rotate(3deg); }
     }
 
-    /* ─── Scene 2: Sunset ─── */
-    .scene-sunset {
-      background: linear-gradient(180deg, #0f0c29 0%, #302b63 15%, #24243e 25%, #c0392b 50%, #e67e22 70%, #f39c12 85%, #1a1a2e 100%);
+    /* ─── Scene 2: Beachside Dining ─── */
+    .scene-beach {
+      background: linear-gradient(180deg, #48c6ef 0%, #87CEEB 40%, #4fc3f7 60%, #29b6f6 68%, #0288d1 78%, #f0d9b5 80%, #e8c99b 90%, #d4a76a 100%);
     }
-    .sunset-sun {
-      position: absolute; bottom: 28%; left: 50%; transform: translateX(-50%);
-      width: 85px; height: 85px;
-      background: radial-gradient(circle, #FFD700 20%, #FF6347 60%, transparent 100%);
+    .beach-sun {
+      position: absolute; top: 8%; right: 15%;
+      width: 50px; height: 50px;
+      background: var(--gold);
       border-radius: 50%;
-      animation: sunsetGlow 4s ease-in-out infinite;
+      box-shadow: 0 0 40px var(--gold), 0 0 80px rgba(255,215,0,.3);
+      animation: sunGlow 3s ease-in-out infinite;
+      z-index: 1;
     }
-    @keyframes sunsetGlow {
-      0%, 100% { opacity: .85; transform: translateX(-50%) scale(1); }
-      50% { opacity: 1; transform: translateX(-50%) scale(1.06); }
+
+    /* Ocean area */
+    .ocean {
+      position: absolute; bottom: 22%; left: 0; right: 0; height: 14%;
+      background: linear-gradient(180deg, #0984e3, #0077b6);
+      overflow: hidden; z-index: 2;
     }
-    .water {
-      position: absolute; bottom: 0; left: 0; right: 0; height: 28%;
-      background: linear-gradient(180deg, rgba(255,99,71,.25), rgba(26,26,46,.85));
+    .wave {
+      position: absolute; left: -5%; width: 110%; height: 8px;
+      border-radius: 50%;
+      animation: waveMove 3.5s ease-in-out infinite;
+    }
+    .wave1 { top: 10%; background: rgba(255,255,255,.2); }
+    .wave2 { top: 40%; background: rgba(255,255,255,.15); animation-delay: 1s; }
+    .wave3 { top: 70%; background: rgba(255,255,255,.1); animation-delay: 2s; }
+    @keyframes waveMove {
+      0%, 100% { transform: translateX(-3%); }
+      50% { transform: translateX(3%); }
+    }
+
+    /* Yacht emoji drift */
+    @keyframes boatDrift {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      25% { transform: translateY(-3px) translateX(4px); }
+      75% { transform: translateY(2px) translateX(-4px); }
+    }
+
+    /* Sandy beach */
+    .beach-sand {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 22%;
+      background: linear-gradient(180deg, #f0d9b5, #e8c99b, #d4a76a);
+      z-index: 4;
+    }
+
+    /* Palm trees — large CSS */
+    .palm-tree {
+      position: absolute; bottom: 20%; z-index: 6;
+    }
+    .palm-trunk {
+      width: 14px; height: 100px;
+      background: linear-gradient(90deg, #6d4c2a, #8B6914, #6d4c2a);
+      margin: 0 auto;
+      border-radius: 4px;
+      position: relative;
+    }
+    /* Trunk segments */
+    .palm-trunk::before {
+      content: ''; position: absolute; inset: 0;
+      background: repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,.08) 10px, rgba(0,0,0,.08) 12px);
+    }
+    .palm-leaves {
+      position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
+      width: 100px; height: 50px;
+    }
+    .palm-leaf {
+      position: absolute; top: 8px; left: 50%;
+      width: 48px; height: 10px;
+      background: linear-gradient(90deg, #27ae60, #2ecc71, #27ae60);
+      border-radius: 2px 50% 50% 2px;
+      transform-origin: left center;
+      animation: palmSway 5s ease-in-out infinite;
+    }
+    /* Mirror leaves for left side */
+    .palm-leaf-l {
+      position: absolute; top: 8px; right: 50%;
+      width: 48px; height: 10px;
+      background: linear-gradient(90deg, #27ae60, #2ecc71, #27ae60);
+      border-radius: 50% 2px 2px 50%;
+      transform-origin: right center;
+      animation: palmSwayL 5s ease-in-out infinite;
+    }
+    .palm-leaf:nth-child(odd), .palm-leaf-l:nth-child(odd) {
+      background: linear-gradient(90deg, #229954, #27ae60, #229954);
+    }
+    @keyframes palmSway {
+      0%, 100% { rotate: var(--r, 0deg); }
+      50% { rotate: calc(var(--r, 0deg) + 4deg); }
+    }
+    @keyframes palmSwayL {
+      0%, 100% { rotate: var(--r, 0deg); }
+      50% { rotate: calc(var(--r, 0deg) - 4deg); }
+    }
+    .palm-tree.left { left: 6%; }
+    .palm-tree.left .palm-trunk { transform: rotate(-5deg); }
+    .palm-tree.right { right: 6%; }
+    .palm-tree.right .palm-trunk { transform: rotate(5deg); }
+
+    /* Romantic dinner setup — couple facing each other */
+    /* ── Dining scene container ── */
+    .dining-scene {
+      position: absolute; bottom: 4%; left: 50%; transform: translateX(-50%);
+      z-index: 7;
+      display: flex; align-items: flex-end; gap: 0;
+    }
+
+    /* ── Seated wrapper — character overlaps chair ── */
+    .seated-lego {
+      position: relative; z-index: 8;
+      width: 60px; height: 70px;
+      perspective: 200px;
+    }
+    /* Character sits on the chair — turned sideways facing the table */
+    .seated-lego .lego {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9;
+    }
+    /* Girl faces right (toward table) */
+    .seated-lego:first-child .lego {
+      transform: translateX(-50%) rotateY(-35deg);
+    }
+    /* Guy faces left (toward table) */
+    .seated-lego:last-child .lego {
+      transform: translateX(-50%) rotateY(35deg);
+    }
+    /* Seated legs — keep visible, shorten and dangle from seat */
+    .seated-lego .lego-legs {
+      display: flex; gap: 2px; justify-content: center;
+      animation: none;
+    }
+    .seated-lego .lego-leg {
+      height: 16px;
+      animation: none;
+    }
+
+    /* ── Side-view chair (profile like reference image) ── */
+    .dinner-chair {
+      position: absolute; bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 40px; height: 70px;
+    }
+    /* Chair back — tall vertical piece on outer side */
+    .chair-back {
+      position: absolute;
+      width: 8px; height: 50px;
+      background: linear-gradient(180deg, #8B5E3C, #A0744F 50%, #8B5E3C);
+      border-radius: 3px 3px 1px 1px;
+      top: 0;
+    }
+    .seated-lego:first-child .chair-back { left: 0; }
+    .seated-lego:last-child .chair-back { right: 0; left: auto; }
+    /* Chair seat — horizontal plank */
+    .chair-seat {
+      position: absolute;
+      top: 32px;
+      left: 0; right: 0;
+      height: 7px;
+      background: #A0744F;
+      border-radius: 2px;
+    }
+    /* Dark stripe on seat top */
+    .chair-seat::after {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: #5C3A1E;
+      border-radius: 2px 2px 0 0;
+    }
+    /* Two legs visible from side — front and back */
+    .chair-legs-wrap {
+      position: absolute; top: 39px;
+      left: 0; right: 0;
+      display: flex; justify-content: space-between;
+    }
+    .chair-leg-item {
+      width: 7px; height: 31px;
+      background: linear-gradient(180deg, #A0744F, #8B5E3C);
+      border-radius: 1px;
+    }
+
+    /* ── Table — solid wood, wide top & thick pedestal ── */
+    .dinner-table-wrap {
+      display: flex; flex-direction: column; align-items: center;
+      margin: 0 -6px;
+      z-index: 6;
+      align-self: flex-end;
+    }
+    .tabletop {
+      width: 80px; height: 8px;
+      background: linear-gradient(180deg, #A0744F, #8B5E3C);
+      border-radius: 3px;
+      position: relative;
+      box-shadow: 0 2px 6px rgba(0,0,0,.15);
+    }
+    .table-pedestal {
+      width: 16px; height: 30px;
+      background: linear-gradient(180deg, #8B5E3C, #6B4226);
+      margin: 0 auto;
+      border-radius: 2px;
+    }
+    /* Table items on top */
+    .table-setting {
+      position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 4px; align-items: flex-end; z-index: 2;
+    }
+    .plate-item {
+      width: 16px; height: 16px;
+      background: radial-gradient(circle, #fff 45%, #e8e8e8);
+      border-radius: 50%;
+      border: 1.5px solid #ddd;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 8px;
+    }
+    .glass-item {
+      width: 7px; height: 14px;
+      background: linear-gradient(180deg, transparent 20%, rgba(116,185,255,.35));
+      border: 1.5px solid rgba(180,180,180,.5);
+      border-radius: 1px 1px 3px 3px;
+    }
+
+    /* Eating pose — arms reach toward table */
+    .eating .lego-arms { animation: none; }
+    .eating .lego-arm {
+      transform-origin: top center;
+    }
+    @keyframes eatLeft {
+      0%, 60%, 100% { transform: rotate(60deg); }
+      75% { transform: rotate(42deg); }
+    }
+    @keyframes eatRight {
+      0%, 60%, 100% { transform: rotate(-60deg); }
+      75% { transform: rotate(-42deg); }
+    }
+    .eating .lego-arm:first-child {
+      animation: eatLeft 2.8s ease-in-out infinite;
+    }
+    .eating .lego-arm:last-child {
+      animation: eatRight 2.8s ease-in-out infinite 1.4s;
+    }
+
+    /* Facing away — hide face, show back of head with hair */
+    .facing-away .lego-eyes,
+    .facing-away .lego-smile { display: none !important; }
+    .facing-away .lego-head::before { display: none !important; }
+    .facing-away .couple-heart { display: none; }
+    /* Girl — black hair covers back of head */
+    .facing-away .lego-char1 .lego-head {
+      background: #1a1a1a;
+    }
+    /* Guy — dark brown hair covers back of head */
+    .facing-away .lego-char2 .lego-head {
+      background: #2c1a0e;
+    }
+
+    /* Waiter character */
+    .waiter {
+      position: absolute; bottom: 20%; z-index: 9;
+      width: 40px;
+    }
+    .waiter .lego-head {
+      width: 26px; height: 26px;
+      background: var(--lego-yellow);
+      border-radius: 6px;
+      margin: 0 auto;
+      position: relative;
+      border: 2px solid var(--lego-yellow-border);
+    }
+    .waiter .lego-head::before {
+      content: ''; position: absolute;
+      top: -8px; left: 50%; transform: translateX(-50%);
+      width: 11px; height: 8px;
+      background: var(--lego-yellow);
+      border-radius: 3px 3px 0 0;
+      border: 2px solid var(--lego-yellow-border); border-bottom: none;
+    }
+    .waiter-hair {
+      position: absolute; top: -8px; left: -2px; right: -2px;
+      height: 12px;
+      background: #1a1a1a;
+      border-radius: 8px 8px 1px 1px;
+      z-index: 5;
+    }
+    /* Neat side part */
+    .waiter-hair::before {
+      content: ''; position: absolute;
+      top: -2px; left: 35%; right: 0;
+      height: 6px;
+      background: #1a1a1a;
+      border-radius: 2px 8px 2px 0;
+    }
+    .waiter .lego-eyes {
+      position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+      width: 14px; display: flex; justify-content: space-between;
+    }
+    .waiter .lego-eye { width: 4px; height: 4px; background: #1a1a2e; border-radius: 50%; }
+    .waiter .lego-smile {
+      position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%);
+      width: 8px; height: 4px;
+      border: 1.5px solid #1a1a2e; border-top: none; border-radius: 0 0 8px 8px;
+    }
+    .waiter-body {
+      width: 28px; height: 22px; margin: 2px auto 0;
+      background: #1a1a1a; border-radius: 3px;
+      position: relative;
+      border: 1.5px solid rgba(0,0,0,.15);
+    }
+    .waiter-body::before { /* white shirt front */
+      content: ''; position: absolute;
+      top: 2px; left: 50%; transform: translateX(-50%);
+      width: 10px; height: 16px;
+      background: #fff; border-radius: 2px;
+    }
+    .waiter-body::after { /* bow tie */
+      content: ''; position: absolute;
+      top: 2px; left: 50%; transform: translateX(-50%);
+      width: 8px; height: 4px;
+      background: #c0392b; border-radius: 1px;
+      z-index: 1;
+    }
+    .waiter-arms {
+      position: absolute; top: 2px; width: calc(100% + 12px); left: -6px;
+      display: flex; justify-content: space-between;
+    }
+    .waiter-arm {
+      width: 6px; height: 16px; border-radius: 3px;
+      background: #1a1a1a; border: 1px solid rgba(0,0,0,.1);
+    }
+    .waiter-legs {
+      display: flex; justify-content: center; gap: 2px; margin-top: 1px;
+    }
+    .waiter-leg {
+      width: 10px; height: 16px; border-radius: 2px;
+      background: #1a1a1a; border: 1px solid rgba(0,0,0,.1);
+    }
+    /* Tray */
+    .waiter-tray {
+      position: absolute; top: 20px; right: -22px;
+      width: 26px; height: 4px;
+      background: #bdc3c7;
+      border-radius: 2px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    }
+    .waiter-tray::after {
+      content: ''; position: absolute;
+      top: -8px; left: 50%; transform: translateX(-50%);
+      font-size: 14px;
+    }
+    .tray-food {
+      position: absolute; top: -14px; left: 2px;
+      font-size: 13px; display: flex; gap: 2px;
+    }
+
+    /* Seagulls */
+    .seagull {
+      position: absolute; font-size: 14px; color: #555;
+      animation: seagullFloat 6s ease-in-out infinite;
+      font-weight: bold; z-index: 1;
+    }
+    @keyframes seagullFloat {
+      0%, 100% { transform: translate(0, 0); }
+      25% { transform: translate(10px, -5px); }
+      50% { transform: translate(20px, 0); }
+      75% { transform: translate(10px, 5px); }
+    }
+
+    /* ─── Scene 3: Road Trip ─── */
+    .scene-roadtrip {
       overflow: hidden;
+      animation: skyShift 16s ease-in-out infinite;
     }
-    .water-shimmer {
-      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-      width: 60px; height: 100%;
-      background: linear-gradient(180deg, rgba(255,215,0,.25), transparent);
-      filter: blur(6px);
-      animation: waterShimmer 3s ease-in-out infinite;
+    @keyframes skyShift {
+      0%, 100% { background: linear-gradient(180deg, #56CCF2 0%, #87CEEB 40%, #a8e6cf 85%, #7ec87e 100%); }
+      30%  { background: linear-gradient(180deg, #e17055 0%, #f39c12 30%, #fdcb6e 55%, #a8e6cf 85%, #7ec87e 100%); }
+      50%  { background: linear-gradient(180deg, #6c3483 0%, #c0392b 20%, #e74c3c 40%, #2c3e50 70%, #2d5a3d 100%); }
+      65%, 85% { background: linear-gradient(180deg, #0c0c2c 0%, #1a1a3e 40%, #2c3e50 70%, #1a3a2a 100%); }
     }
-    @keyframes waterShimmer {
-      0%, 100% { opacity: .3; width: 60px; }
-      50% { opacity: .6; width: 90px; }
+
+    /* Sun that sets */
+    .road-sun {
+      position: absolute; right: 15%;
+      width: 50px; height: 50px;
+      border-radius: 50%;
+      z-index: 1;
+      animation: sunSet 16s ease-in-out infinite;
     }
-    .water-ripple {
-      position: absolute; width: 100%; height: 100%;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 8px,
-        rgba(255,255,255,.03) 8px,
-        rgba(255,255,255,.03) 10px
-      );
-      animation: ripple 4s ease-in-out infinite;
+    @keyframes sunSet {
+      0%, 100% { top: 10%; background: radial-gradient(circle, #fff700, #f39c12); box-shadow: 0 0 40px rgba(243,156,18,.5); opacity: 1; }
+      30% { top: 35%; background: radial-gradient(circle, #ff6b35, #e74c3c); box-shadow: 0 0 50px rgba(231,76,60,.5); opacity: 1; }
+      45% { top: 55%; background: radial-gradient(circle, #e74c3c, #c0392b); box-shadow: 0 0 30px rgba(192,57,43,.3); opacity: .6; }
+      50%, 85% { top: 70%; opacity: 0; }
+      95% { top: 12%; opacity: 0; }
     }
-    @keyframes ripple {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
+
+    /* Moon that rises */
+    .road-moon {
+      position: absolute; left: 20%;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      z-index: 1;
+      animation: moonRise 16s ease-in-out infinite;
     }
-    .stars-sunset { position: absolute; top: 0; left: 0; right: 0; height: 35%; }
-    .star-s {
+    @keyframes moonRise {
+      0%, 45% { top: 60%; opacity: 0; }
+      60% { top: 12%; opacity: 1; background: radial-gradient(circle, #ecf0f1, #bdc3c7); box-shadow: 0 0 25px rgba(236,240,241,.4); }
+      85% { top: 10%; opacity: 1; background: radial-gradient(circle, #ecf0f1, #bdc3c7); box-shadow: 0 0 25px rgba(236,240,241,.4); }
+      95%, 100% { top: 60%; opacity: 0; }
+    }
+
+    /* Stars — visible at night */
+    .road-stars {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 40%;
+      z-index: 1;
+      animation: starsShow 16s ease-in-out infinite;
+    }
+    @keyframes starsShow {
+      0%, 50% { opacity: 0; }
+      65%, 85% { opacity: 1; }
+      95%, 100% { opacity: 0; }
+    }
+    .road-star {
       position: absolute; width: 3px; height: 3px;
       background: #fff; border-radius: 50%;
       animation: twinkle 2s ease-in-out infinite;
     }
-    @keyframes twinkle { 0%, 100% { opacity: .2; } 50% { opacity: 1; } }
 
-    /* Shooting star */
-    .shooting-star {
-      position: absolute;
-      width: 3px; height: 3px;
-      background: #fff;
-      border-radius: 50%;
-      box-shadow: 0 0 6px 2px rgba(255,255,255,.6);
-      animation: shoot 4s linear infinite;
-      opacity: 0;
+    /* Road */
+    .road {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 28%;
+      background: linear-gradient(180deg, #555 0%, #444 40%, #3a3a3a 100%);
     }
-    .shooting-star::after {
-      content: ''; position: absolute;
-      top: 50%; right: 100%;
-      width: 40px; height: 1px;
-      background: linear-gradient(to left, rgba(255,255,255,.6), transparent);
+    .road-line {
+      position: absolute; top: 45%; left: 0; right: 0; height: 3px;
+      background: repeating-linear-gradient(90deg, #f1c40f 0px, #f1c40f 30px, transparent 30px, transparent 60px);
+      animation: roadScroll 1.2s linear infinite;
     }
-    @keyframes shoot {
-      0%  { transform: translate(0,0) rotate(-35deg); opacity: 0; }
-      5%  { opacity: 1; }
-      15% { opacity: 1; }
-      20% { transform: translate(-200px, 120px) rotate(-35deg); opacity: 0; }
-      100%{ opacity: 0; }
+    @keyframes roadScroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-60px); }
+    }
+    .road-edge {
+      position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: #777;
     }
 
-    /* ─── Scene 3: Dinner ─── */
-    .scene-dinner {
-      background: linear-gradient(180deg, #0d0521 0%, #1a0a35 40%, #2d1b4e 70%, #3d2b5e 100%);
+    /* Scrolling landmark emojis */
+    .landmark-strip {
+      position: absolute; bottom: 28%; left: 0;
+      width: 200%; height: 55%;
+      display: flex; align-items: flex-end;
+      animation: landmarkScroll 18s linear infinite;
     }
-    .candle-glow {
-      position: absolute; top: 25%; left: 50%; transform: translateX(-50%);
-      width: 220px; height: 220px;
-      background: radial-gradient(circle, rgba(255,165,0,.12) 0%, rgba(255,140,0,.06) 40%, transparent 70%);
-      animation: candleFlicker 2s ease-in-out infinite;
+    @keyframes landmarkScroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
     }
-    @keyframes candleFlicker {
-      0%, 100% { opacity: .7; transform: translateX(-50%) scale(1); }
-      25% { opacity: 1; transform: translateX(-50%) scale(1.03); }
-      50% { opacity: .85; transform: translateX(-50%) scale(.97); }
-      75% { opacity: .95; transform: translateX(-50%) scale(1.02); }
+    .landmark-item {
+      flex-shrink: 0;
+      display: flex; flex-direction: column; align-items: center;
+      margin: 0 14px;
     }
-    .table {
-      position: absolute; bottom: 22%; left: 50%; transform: translateX(-50%);
-      width: 60%; height: 8px;
-      background: linear-gradient(90deg, #6d3a0a, #8B4513, #6d3a0a);
-      border-radius: 4px;
-      box-shadow: 0 4px 15px rgba(0,0,0,.5);
+    .landmark-icon {
+      font-size: 76px;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,.2));
     }
-    .table-leg {
-      position: absolute; bottom: -30px; width: 8px; height: 30px;
-      background: #5a2d06; border-radius: 2px;
-    }
-    .table-items {
-      position: absolute; bottom: 26%; left: 50%; transform: translateX(-50%);
-      display: flex; gap: 16px; font-size: 22px;
-    }
-    .candle-flame {
-      position: absolute; bottom: 28%; left: 50%; transform: translateX(-50%);
-      font-size: 18px;
-      animation: candleFlicker 1.2s ease-in-out infinite;
-    }
-    .dinner-sparkles { position: absolute; top: 5%; left: 0; right: 0; bottom: 40%; }
-    .sparkle {
-      position: absolute; font-size: 10px; color: rgba(255,215,0,.6);
-      animation: twinkle 2.5s ease-in-out infinite;
-    }
-    /* Musical notes */
-    .music-note {
-      position: absolute; font-size: 16px; opacity: 0;
-      animation: noteFloat 5s ease-in-out infinite;
-      color: rgba(255,215,0,.4);
-    }
-    @keyframes noteFloat {
-      0%   { opacity: 0; transform: translate(0, 0) rotate(0deg); }
-      20%  { opacity: .5; }
-      80%  { opacity: .3; }
-      100% { opacity: 0; transform: translate(20px, -60px) rotate(20deg); }
+    .landmark-label {
+      font-family: 'Quicksand', sans-serif;
+      font-size: 10px; font-weight: 700;
+      color: #2d3436;
+      background: rgba(255,255,255,.75);
+      padding: 2px 8px;
+      border-radius: 8px;
+      margin-top: 4px;
+      white-space: nowrap;
     }
 
-    /* ─── Scene 4: Travel ─── */
-    .scene-travel {
-      background: linear-gradient(180deg, #0984e3 0%, #74b9ff 45%, #dfe6e9 75%, #b2bec3 100%);
+    /* Car emoji on the road */
+    .car-emoji {
+      position: absolute; bottom: 22%; left: 50%;
+      transform: translateX(-50%) scaleX(-1);
+      font-size: 68px;
+      z-index: 10;
+      filter: hue-rotate(200deg) saturate(1.4);
+      animation: carBounce 1s ease-in-out infinite;
     }
-    .landmarks {
-      position: absolute; bottom: 15%; left: 0; right: 0;
-      display: flex; justify-content: space-around; align-items: flex-end;
-      padding: 0 12px;
-    }
-    .landmark {
-      font-size: 34px; opacity: 0;
-      animation: landmarkAppear 1s ease forwards;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,.2));
-    }
-    .active .landmark:nth-child(1) { animation-delay: 0.3s; }
-    .active .landmark:nth-child(2) { animation-delay: 0.8s; }
-    .active .landmark:nth-child(3) { animation-delay: 1.3s; }
-    .active .landmark:nth-child(4) { animation-delay: 1.8s; }
-    .active .landmark:nth-child(5) { animation-delay: 2.3s; }
-    @keyframes landmarkAppear {
-      0% { opacity: 0; transform: translateY(20px) scale(.6); }
-      100% { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    .airplane {
-      position: absolute; top: 16%; font-size: 28px;
-      animation: fly 7s linear infinite;
-      filter: drop-shadow(2px 2px 2px rgba(0,0,0,.2));
-    }
-    @keyframes fly {
-      0%   { left: -12%; transform: rotate(-8deg) scaleX(-1); }
-      100% { left: 112%; transform: rotate(-8deg) scaleX(-1); }
-    }
-    .travel-ground {
-      position: absolute; bottom: 0; left: 0; right: 0; height: 15%;
-      background: linear-gradient(180deg, #b2bec3, #636e72);
-    }
-    /* Moving clouds for travel */
-    .travel-clouds {
-      position: absolute; top: 5%; left: 0; width: 200%; height: 35%;
-      animation: driftClouds 20s linear infinite;
+    @keyframes carBounce {
+      0%, 100% { transform: translateX(-50%) scaleX(-1) translateY(0); }
+      50% { transform: translateX(-50%) scaleX(-1) translateY(-3px); }
     }
 
-    /* ─── Scene 5: Rainy Day at Home ─── */
+    /* ─── Scene 4: Rainy Day at Home ─── */
     .scene-rainy {
       background: linear-gradient(180deg, #2d3436 0%, #636e72 20%, #2d3436 50%, #1a1a2e 100%);
+    }
+    /* Indoor wall behind window */
+    .room-wall {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 30%;
+      background: #BCAE9A;
+      z-index: 2;
     }
     .rain-container {
       position: absolute; inset: 0; overflow: hidden;
@@ -663,30 +1193,22 @@
       100% { transform: translateY(110vh); opacity: .2; }
     }
     .window-frame {
-      position: absolute; top: 8%; left: 50%; transform: translateX(-50%);
-      width: 52%; aspect-ratio: 1.4;
+      position: absolute; top: 18%; left: 50%; transform: translateX(-50%);
+      width: 42%; aspect-ratio: 1.6;
       border: 7px solid #8B6914;
       border-radius: 8px;
       background: linear-gradient(180deg, #636e72, #4a5568);
       box-shadow: inset 0 0 30px rgba(255,165,0,.05), 0 0 20px rgba(0,0,0,.3);
       overflow: hidden;
-    }
-    .window-frame::before {
-      content: ''; position: absolute;
-      top: 0; left: 50%; width: 7px; height: 100%;
-      background: #8B6914; transform: translateX(-50%);
-    }
-    .window-frame::after {
-      content: ''; position: absolute;
-      top: 50%; left: 0; width: 100%; height: 7px;
-      background: #8B6914; transform: translateY(-50%);
+      z-index: 3;
     }
     .cozy-floor {
       position: absolute; bottom: 0; left: 0; right: 0; height: 30%;
       background: linear-gradient(180deg, #5a3e2b, #4a3020);
+      z-index: 4;
     }
     .rug {
-      position: absolute; bottom: 3%; left: 50%; transform: translateX(-50%);
+      position: absolute; bottom: 12%; left: 50%; transform: translateX(-50%);
       width: 55%; height: 30%;
       background: radial-gradient(ellipse, #c0392b, #8B2500);
       border-radius: 50%;
@@ -734,7 +1256,7 @@
       flex-direction: column;
     }
     .big-heart {
-      font-size: 80px;
+      font-size: 56px;
       animation: bigHeartBeat 1.2s ease-in-out infinite;
       filter: drop-shadow(0 0 30px rgba(255,77,109,.6));
     }
@@ -820,7 +1342,11 @@
       .lego-arms { width: calc(100% + 14px); left: -7px; }
       .lego-leg { width: 12px; height: 17px; }
       .lego-hair { height: 11px; top: -6px; }
-      .lego-char2 .lego-hair { height: 18px; top: -9px; }
+      .lego-char1 .lego-hair { height: 12px; top: -8px; }
+      .lego-char1 .lego-hair::before { width: 8px; height: 36px; top: -5px; left: -6px; }
+      .lego-char1 .lego-hair::after { width: 6px; height: 11px; box-shadow: 24px 0 0 0 #1a1a1a; }
+      .lego-char2 .lego-hair { height: 10px; top: -7px; }
+      .lego-char2 .lego-hair::before { top: -2px; height: 6px; }
       .stage-glass { padding: 8px; border-radius: 18px; }
       .stage { border-radius: 12px; }
       .header { padding: 6px 16px 4px; }
@@ -860,11 +1386,12 @@
 
   <!-- Floating hearts background -->
   <div class="hearts-bg" id="heartsBg"></div>
+  <div class="bg-fireworks" id="bgFireworks"></div>
 
   <!-- Header -->
   <div class="header fade-in">
-    <h1>A Lego Love Story</h1>
-    <p>Built brick by brick, with love</p>
+    <h1>Vai &amp; Vams</h1>
+    <p>Together is our favorite place to be</p>
   </div>
 
   <!-- Animation Stage -->
@@ -872,7 +1399,7 @@
     <div class="stage-glass">
       <div class="stage" id="stage">
 
-        <!-- Scene 1: Sunny Walk -->
+        <!-- Scene 1: Sunny Walk in the Park -->
         <div class="scene scene-sunny active" id="scene1">
           <div class="sun"></div>
           <div class="sun-rays"></div>
@@ -882,6 +1409,35 @@
             <div class="cloud"></div>
           </div>
           <div class="ground-sunny"></div>
+          <!-- Park path -->
+          <div class="park-path"></div>
+          <!-- Scrolling park background scenery -->
+          <div class="park-bg-scroll">
+            <!-- Set 1 -->
+            <div class="css-tree" style="left:3%"><div class="tree-top"></div><div class="tree-trunk"></div></div>
+            <div class="css-tree tall" style="left:12%"><div class="tree-top"></div><div class="tree-trunk"></div></div>
+            <div class="css-fountain" style="left:24%">
+              <div class="fountain-base"></div>
+              <div class="fountain-pillar"></div>
+              <div class="fountain-bowl"></div>
+              <div class="fountain-water"></div>
+              <div class="fountain-water w2"></div>
+            </div>
+            <div class="css-tree" style="left:38%"><div class="tree-top"></div><div class="tree-trunk"></div></div>
+            <div class="css-tree tall" style="left:48%"><div class="tree-top"></div><div class="tree-trunk"></div></div>
+            <!-- Duplicate set for seamless loop -->
+            <div class="css-tree" style="left:53%"><div class="tree-top"></div><div class="tree-trunk"></div></div>
+            <div class="css-tree tall" style="left:62%"><div class="tree-top"></div><div class="tree-trunk"></div></div>
+            <div class="css-fountain" style="left:74%">
+              <div class="fountain-base"></div>
+              <div class="fountain-pillar"></div>
+              <div class="fountain-bowl"></div>
+              <div class="fountain-water"></div>
+              <div class="fountain-water w2"></div>
+            </div>
+            <div class="css-tree" style="left:88%"><div class="tree-top"></div><div class="tree-trunk"></div></div>
+            <div class="css-tree tall" style="left:98%"><div class="tree-top"></div><div class="tree-trunk"></div></div>
+          </div>
           <div class="flowers">
             <span class="flower" style="left:6%;bottom:8%">&#127800;</span>
             <span class="flower" style="left:18%;bottom:12%">&#127803;</span>
@@ -920,149 +1476,177 @@
           </div>
         </div>
 
-        <!-- Scene 2: Sunset -->
-        <div class="scene scene-sunset" id="scene2">
-          <div class="stars-sunset">
-            <span class="star-s" style="top:5%;left:8%"></span>
-            <span class="star-s" style="top:8%;left:25%;animation-delay:.5s"></span>
-            <span class="star-s" style="top:3%;left:42%;animation-delay:1s"></span>
-            <span class="star-s" style="top:12%;left:65%;animation-delay:.3s"></span>
-            <span class="star-s" style="top:6%;left:80%;animation-delay:1.5s"></span>
-            <span class="star-s" style="top:10%;left:92%;animation-delay:.8s"></span>
+        <!-- Scene 2: Beachside Dining in Cali -->
+        <div class="scene scene-beach" id="scene2">
+          <div class="beach-sun"></div>
+          <!-- Seagulls -->
+          <span class="seagull" style="top:10%;left:28%;animation-delay:0s">&#12336;</span>
+          <span class="seagull" style="top:16%;left:52%;animation-delay:2s;font-size:11px">&#12336;</span>
+          <span class="seagull" style="top:8%;left:68%;animation-delay:4s">&#12336;</span>
+          <!-- Ocean with boats -->
+          <div class="ocean">
+            <div class="wave wave1"></div>
+            <div class="wave wave2"></div>
+            <div class="wave wave3"></div>
+            <!-- Yacht emoji far left -->
+            <div style="position:absolute;top:2%;left:22%;font-size:28px;opacity:.85;animation:boatDrift 12s ease-in-out infinite">&#x1F6A4;</div>
           </div>
-          <div class="shooting-star" style="top:8%;left:70%;animation-delay:1s"></div>
-          <div class="shooting-star" style="top:15%;left:40%;animation-delay:5s"></div>
-          <div class="sunset-sun"></div>
-          <div class="water">
-            <div class="water-shimmer"></div>
-            <div class="water-ripple"></div>
+          <!-- Sandy beach -->
+          <div class="beach-sand"></div>
+          <!-- Left palm tree -->
+          <div class="palm-tree left">
+            <div class="palm-leaves">
+              <div class="palm-leaf-l" style="--r:50deg"></div>
+              <div class="palm-leaf-l" style="--r:25deg"></div>
+              <div class="palm-leaf-l" style="--r:0deg"></div>
+              <div class="palm-leaf" style="--r:0deg"></div>
+              <div class="palm-leaf" style="--r:-25deg"></div>
+              <div class="palm-leaf" style="--r:25deg"></div>
+              <div class="palm-leaf" style="--r:50deg"></div>
+              <div class="palm-leaf-l" style="--r:-25deg"></div>
+              <div class="palm-leaf-l" style="--r:-50deg"></div>
+            </div>
+            <div class="palm-trunk"></div>
           </div>
-          <div class="lego-couple swaying" style="bottom:30%">
-            <div class="lego lego-char1">
-              <div class="lego-head">
-                <div class="lego-hair"></div>
-                <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
-                <div class="lego-smile"></div>
-              </div>
-              <div class="lego-body">
-                <div class="lego-arms"><span class="lego-arm"></span><span class="lego-arm"></span></div>
-              </div>
-              <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
+          <!-- Right palm tree -->
+          <div class="palm-tree right">
+            <div class="palm-leaves">
+              <div class="palm-leaf-l" style="--r:50deg"></div>
+              <div class="palm-leaf-l" style="--r:25deg"></div>
+              <div class="palm-leaf-l" style="--r:0deg"></div>
+              <div class="palm-leaf" style="--r:0deg"></div>
+              <div class="palm-leaf" style="--r:-25deg"></div>
+              <div class="palm-leaf" style="--r:25deg"></div>
+              <div class="palm-leaf" style="--r:50deg"></div>
+              <div class="palm-leaf-l" style="--r:-25deg"></div>
+              <div class="palm-leaf-l" style="--r:-50deg"></div>
             </div>
-            <span class="couple-heart">&#9829;</span>
-            <div class="lego lego-char2">
-              <div class="lego-head">
-                <div class="lego-hair"></div>
-                <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
-                <div class="lego-smile"></div>
+            <div class="palm-trunk"></div>
+          </div>
+          <!-- Dining scene: girl - chair | table | chair - guy -->
+          <div class="dining-scene">
+            <!-- Girl (char1) seated on left -->
+            <div class="seated-lego">
+              <div class="lego lego-char1 eating">
+                <div class="lego-head">
+                  <div class="lego-hair"></div>
+                  <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
+                  <div class="lego-smile"></div>
+                </div>
+                <div class="lego-body">
+                  <div class="lego-arms"><span class="lego-arm"></span><span class="lego-arm"></span></div>
+                </div>
+                <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
               </div>
-              <div class="lego-body">
-                <div class="lego-arms"><span class="lego-arm"></span><span class="lego-arm"></span></div>
+              <div class="dinner-chair">
+                <div class="chair-back"></div>
+                <div class="chair-seat"></div>
+                <div class="chair-legs-wrap"><span class="chair-leg-item"></span><span class="chair-leg-item"></span></div>
               </div>
-              <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
             </div>
+            <!-- Center table with food -->
+            <div class="dinner-table-wrap">
+              <div class="tabletop">
+                <div class="table-setting">
+                  <div class="plate-item">&#127835;</div>
+                  <div class="glass-item"></div>
+                  <div class="glass-item"></div>
+                  <div class="plate-item">&#127835;</div>
+                </div>
+              </div>
+              <div class="table-pedestal"></div>
+            </div>
+            <!-- Guy (char2) seated on right -->
+            <div class="seated-lego">
+              <div class="lego lego-char2 eating">
+                <div class="lego-head">
+                  <div class="lego-hair"></div>
+                  <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
+                  <div class="lego-smile"></div>
+                </div>
+                <div class="lego-body">
+                  <div class="lego-arms"><span class="lego-arm"></span><span class="lego-arm"></span></div>
+                </div>
+                <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
+              </div>
+              <div class="dinner-chair">
+                <div class="chair-back"></div>
+                <div class="chair-seat"></div>
+                <div class="chair-legs-wrap"><span class="chair-leg-item"></span><span class="chair-leg-item"></span></div>
+              </div>
+            </div>
+          </div>
+          <!-- Waiter -->
+          <div class="waiter" style="right:16%">
+            <div class="lego-head">
+              <div class="waiter-hair"></div>
+              <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
+              <div class="lego-smile"></div>
+            </div>
+            <div class="waiter-body" style="position:relative">
+              <div class="waiter-arms"><span class="waiter-arm"></span><span class="waiter-arm"></span></div>
+              <div class="waiter-tray">
+                <div class="tray-food"><span>&#127869;</span><span>&#127863;</span></div>
+              </div>
+            </div>
+            <div class="waiter-legs"><span class="waiter-leg"></span><span class="waiter-leg"></span></div>
           </div>
         </div>
 
-        <!-- Scene 3: Dinner -->
-        <div class="scene scene-dinner" id="scene3">
-          <div class="candle-glow"></div>
-          <div class="dinner-sparkles">
-            <span class="sparkle" style="top:12%;left:18%;animation-delay:0s">&#10022;</span>
-            <span class="sparkle" style="top:22%;left:72%;animation-delay:.7s">&#10022;</span>
-            <span class="sparkle" style="top:8%;left:48%;animation-delay:1.4s">&#10022;</span>
-            <span class="sparkle" style="top:30%;left:32%;animation-delay:.3s">&#10022;</span>
-            <span class="sparkle" style="top:18%;left:85%;animation-delay:1s">&#10022;</span>
-            <span class="sparkle" style="top:5%;left:60%;animation-delay:1.8s">&#10022;</span>
+        <!-- Scene 3: Road Trip -->
+        <div class="scene scene-roadtrip" id="scene3">
+          <!-- Sun -->
+          <div class="road-sun"></div>
+          <!-- Moon -->
+          <div class="road-moon"></div>
+          <!-- Stars -->
+          <div class="road-stars">
+            <span class="road-star" style="top:8%;left:12%"></span>
+            <span class="road-star" style="top:15%;left:28%;animation-delay:.5s"></span>
+            <span class="road-star" style="top:5%;left:45%;animation-delay:1s"></span>
+            <span class="road-star" style="top:20%;left:62%;animation-delay:.3s"></span>
+            <span class="road-star" style="top:10%;left:78%;animation-delay:1.5s"></span>
+            <span class="road-star" style="top:25%;left:88%;animation-delay:.8s"></span>
+            <span class="road-star" style="top:3%;left:55%;animation-delay:1.2s"></span>
+            <span class="road-star" style="top:18%;left:38%;animation-delay:.6s"></span>
+            <span class="road-star" style="top:12%;left:92%;animation-delay:1.8s"></span>
+            <span class="road-star" style="top:6%;left:70%;animation-delay:.2s"></span>
+            <span class="road-star" style="top:22%;left:18%;animation-delay:1.4s"></span>
+            <span class="road-star" style="top:2%;left:82%;animation-delay:.9s"></span>
           </div>
-          <span class="music-note" style="top:20%;left:15%;animation-delay:0s">&#9835;</span>
-          <span class="music-note" style="top:30%;left:78%;animation-delay:1.5s">&#9834;</span>
-          <span class="music-note" style="top:15%;left:55%;animation-delay:3s">&#9835;</span>
-          <span class="music-note" style="top:25%;left:35%;animation-delay:2s">&#9834;</span>
-          <div class="candle-flame">&#128367;&#65039;</div>
-          <div class="table">
-            <div class="table-leg" style="left:10%"></div>
-            <div class="table-leg" style="right:10%"></div>
+          <!-- Scrolling landmark emojis -->
+          <div class="landmark-strip">
+            <div class="landmark-item"><span class="landmark-icon">&#x1F5FD;</span></div>
+            <div class="landmark-item"><span class="landmark-icon">&#x1F5FC;</span></div>
+            <div class="landmark-item"><span class="landmark-icon">&#x1F309;</span></div>
+            <div class="landmark-item"><span class="landmark-icon">&#x1F3A1;</span></div>
+            <div class="landmark-item"><span class="landmark-icon">&#x26E9;&#xFE0F;</span></div>
+            <div class="landmark-item"><span class="landmark-icon">&#x1F5FF;</span></div>
+            <div class="landmark-item"><span class="landmark-icon">&#x1F3DB;&#xFE0F;</span></div>
+            <!-- Duplicate for seamless loop -->
+            <div class="landmark-item"><span class="landmark-icon">&#x1F5FD;</span></div>
+            <div class="landmark-item"><span class="landmark-icon">&#x1F5FC;</span></div>
+            <div class="landmark-item"><span class="landmark-icon">&#x1F309;</span></div>
+            <div class="landmark-item"><span class="landmark-icon">&#x1F3A1;</span></div>
+            <div class="landmark-item"><span class="landmark-icon">&#x26E9;&#xFE0F;</span></div>
+            <div class="landmark-item"><span class="landmark-icon">&#x1F5FF;</span></div>
+            <div class="landmark-item"><span class="landmark-icon">&#x1F3DB;&#xFE0F;</span></div>
           </div>
-          <div class="table-items">
-            <span>&#127839;</span>
-            <span>&#127863;</span>
-            <span>&#127856;</span>
+          <!-- Road -->
+          <div class="road">
+            <div class="road-edge"></div>
+            <div class="road-line"></div>
           </div>
-          <div class="lego-couple" style="bottom:30%">
-            <div class="lego lego-char1">
-              <div class="lego-head">
-                <div class="lego-hair"></div>
-                <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
-                <div class="lego-smile"></div>
-              </div>
-              <div class="lego-body">
-                <div class="lego-arms"><span class="lego-arm"></span><span class="lego-arm"></span></div>
-              </div>
-              <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
-            </div>
-            <span class="couple-heart">&#9829;</span>
-            <div class="lego lego-char2">
-              <div class="lego-head">
-                <div class="lego-hair"></div>
-                <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
-                <div class="lego-smile"></div>
-              </div>
-              <div class="lego-body">
-                <div class="lego-arms"><span class="lego-arm"></span><span class="lego-arm"></span></div>
-              </div>
-              <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
-            </div>
-          </div>
+          <!-- Car emoji -->
+          <div class="car-emoji">&#128663;</div>
         </div>
 
-        <!-- Scene 4: Travel -->
-        <div class="scene scene-travel" id="scene4">
-          <div class="travel-clouds clouds">
-            <div class="cloud"></div>
-            <div class="cloud"></div>
-            <div class="cloud"></div>
-          </div>
-          <div class="airplane">&#9992;&#65039;</div>
-          <div class="landmarks">
-            <span class="landmark">&#127987;&#65039;</span>
-            <span class="landmark">&#128508;</span>
-            <span class="landmark">&#127971;</span>
-            <span class="landmark">&#9968;</span>
-            <span class="landmark">&#127960;</span>
-          </div>
-          <div class="travel-ground"></div>
-          <div class="lego-couple walking">
-            <div class="lego lego-char1">
-              <div class="lego-head">
-                <div class="lego-hair"></div>
-                <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
-                <div class="lego-smile"></div>
-              </div>
-              <div class="lego-body" style="background:#e17055;">
-                <div class="lego-arms"><span class="lego-arm" style="background:#e17055;"></span><span class="lego-arm" style="background:#e17055;"></span></div>
-              </div>
-              <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
-            </div>
-            <span class="couple-heart">&#9829;</span>
-            <div class="lego lego-char2">
-              <div class="lego-head">
-                <div class="lego-hair"></div>
-                <div class="lego-eyes"><span class="lego-eye"></span><span class="lego-eye"></span></div>
-                <div class="lego-smile"></div>
-              </div>
-              <div class="lego-body" style="background:#00b894;">
-                <div class="lego-arms"><span class="lego-arm" style="background:#00b894;"></span><span class="lego-arm" style="background:#00b894;"></span></div>
-              </div>
-              <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Scene 5: Rainy Day at Home -->
-        <div class="scene scene-rainy" id="scene5">
+        <!-- Scene 4: Rainy Day at Home -->
+        <div class="scene scene-rainy" id="scene4">
           <div class="lightning"></div>
           <div class="rain-container" id="rainContainer"></div>
+          <!-- Indoor wall -->
+          <div class="room-wall"></div>
           <div class="window-frame">
             <div class="rain-container window-rain" id="windowRain"></div>
           </div>
@@ -1070,20 +1654,10 @@
           <div class="cozy-floor">
             <div class="rug"></div>
           </div>
-          <div class="cozy-items">
-            <span style="position:relative">
-              &#9749;
-              <span class="steam" style="top:-14px;left:4px;animation-delay:0s">~</span>
-              <span class="steam" style="top:-14px;left:14px;animation-delay:.6s">~</span>
-            </span>
-            <span>&#128218;</span>
-            <span style="position:relative">
-              &#9749;
-              <span class="steam" style="top:-14px;left:4px;animation-delay:.3s">~</span>
-              <span class="steam" style="top:-14px;left:14px;animation-delay:.9s">~</span>
-            </span>
-          </div>
-          <div class="lego-couple swaying" style="bottom:28%">
+          <!-- Sofa on right, perspective view -->
+          <div style="position:absolute;bottom:6%;right:8%;font-size:150px;z-index:5;transform:perspective(300px) rotateY(-25deg);filter:drop-shadow(0 3px 8px rgba(0,0,0,.3))">&#128715;</div>
+          <!-- Couple standing near window, back facing us -->
+          <div class="lego-couple facing-away swaying" style="bottom:30%;z-index:7">
             <div class="lego lego-char1">
               <div class="lego-head">
                 <div class="lego-hair"></div>
@@ -1108,14 +1682,40 @@
               <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
             </div>
           </div>
+          <!-- Table & chairs on the rug (same layout as Scene 2) -->
+          <div class="dining-scene" style="bottom:8%">
+            <div class="seated-lego" style="width:40px;height:70px">
+              <div class="dinner-chair">
+                <div class="chair-back"></div>
+                <div class="chair-seat"></div>
+                <div class="chair-legs-wrap"><span class="chair-leg-item"></span><span class="chair-leg-item"></span></div>
+              </div>
+            </div>
+            <div class="dinner-table-wrap">
+              <div class="tabletop">
+                <div class="table-setting">
+                  <span style="font-size:10px">&#9749;</span>
+                  <span style="font-size:10px">&#9749;</span>
+                </div>
+              </div>
+              <div class="table-pedestal"></div>
+            </div>
+            <div class="seated-lego" style="width:40px;height:70px">
+              <div class="dinner-chair">
+                <div class="chair-back"></div>
+                <div class="chair-seat"></div>
+                <div class="chair-legs-wrap"><span class="chair-leg-item"></span><span class="chair-leg-item"></span></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Scene 6: Valentine Finale -->
-        <div class="scene scene-finale" id="scene6">
+        <div class="scene scene-finale" id="scene5">
           <div class="finale-hearts" id="finaleHearts"></div>
           <div id="fireworksCanvas" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;"></div>
           <div class="big-heart">&#10084;&#65039;</div>
-          <div class="finale-text">Happy Valentine's Day, My Love</div>
+          <div class="finale-text">Happy Valentine's Day</div>
           <div class="finale-sub">Every moment with you is my favorite adventure</div>
           <div class="lego-couple swaying" style="bottom:8%">
             <div class="lego lego-char1">
@@ -1129,7 +1729,6 @@
               </div>
               <div class="lego-legs"><span class="lego-leg"></span><span class="lego-leg"></span></div>
             </div>
-            <span class="couple-heart">&#9829;</span>
             <div class="lego lego-char2">
               <div class="lego-head">
                 <div class="lego-hair"></div>
@@ -1159,6 +1758,7 @@
   <!-- Controls -->
   <div class="controls fade-in">
     <button class="btn" id="playBtn">&#9654; Begin Our Story</button>
+    <button class="btn music-btn" id="musicBtn">&#9835; Music</button>
     <div class="progress-container">
       <div class="progress-dots" id="dots">
         <span class="dot active" data-scene="0"></span>
@@ -1166,7 +1766,6 @@
         <span class="dot" data-scene="2"></span>
         <span class="dot" data-scene="3"></span>
         <span class="dot" data-scene="4"></span>
-        <span class="dot" data-scene="5"></span>
       </div>
     </div>
     <div class="progress-bar-wrap">
@@ -1181,32 +1780,27 @@
     const story = [
       {
         id: 'scene1',
-        text: 'Two little Lego hearts found each other one sunny day... hand in hand, they took their first steps together beneath a golden sky — knowing this was the start of something extraordinary.',
+        text: 'Two little Lego hearts found each other one sunny day... hand in hand, they took their first steps together beneath a golden sky, knowing this was the start of something extraordinary.',
         duration: 8000
       },
       {
         id: 'scene2',
-        text: 'They watched the sun melt into the horizon, painting the sky in every shade of love... in that gentle silence, their hearts spoke louder than any words ever could.',
+        text: 'Sun-kissed and sandy-toed, they sat by the shore where the Pacific meets the palms... it was never about the place, it was about who you\'re with when the waves roll in.',
         duration: 8000
       },
       {
         id: 'scene3',
-        text: 'Under candlelight, the world shrunk to just the two of them... every shared laugh, every stolen glance across the table, became a memory they\'d treasure forever.',
-        duration: 8000
+        text: 'Windows down, playlist on, and the open road ahead... they drove through sunlit valleys and starlit highways, because every mile together felt like home, and the best journeys have no destination, just each other.',
+        duration: 10000
       },
       {
         id: 'scene4',
-        text: 'Together they explored the world — from the Eiffel Tower to ancient temples, every new horizon was better because they discovered it side by side. The whole world was their playground.',
+        text: 'And on rainy days, they\'d build a little world indoors... warm coffee, good books, and the gentle sound of rain on the window. Home was never a place. It was each other.',
         duration: 8000
       },
       {
         id: 'scene5',
-        text: 'And on rainy days, they\'d build a little world indoors — warm coffee, good books, and the gentle sound of rain on the window... home was never a place. It was each other.',
-        duration: 8000
-      },
-      {
-        id: 'scene6',
-        text: 'Through every sunrise and storm, every adventure and quiet moment — their love only grew stronger, brick by brick. Happy Valentine\'s Day, my love. You are my favorite story. \u2764',
+        text: 'Through every sunrise and storm, every adventure and quiet moment, their love only grew stronger, brick by brick. Happy Valentine\'s Day, my littles. You are my favorite story. \u2764',
         duration: 10000
       }
     ];
@@ -1216,8 +1810,10 @@
     ═══════════════════════════════════════════ */
     let currentScene = 0;
     let isPlaying = false;
+    let isPaused = false;
     let sceneTimer = null;
     let typeTimer = null;
+    let typeCallbackTimer = null;
     let progressTimer = null;
 
     const scenes = document.querySelectorAll('.scene');
@@ -1232,18 +1828,22 @@
     ═══════════════════════════════════════════ */
     function typeWriter(text, callback) {
       clearTimeout(typeTimer);
+      clearTimeout(typeCallbackTimer);
       narrationText.textContent = '';
       cursor.style.display = 'inline-block';
+      isPaused = false;
       let i = 0;
       const speed = Math.max(22, Math.min(40, 2200 / text.length));
 
       function type() {
+        if (isPaused) return;
         if (i < text.length) {
           narrationText.textContent += text.charAt(i);
           i++;
           typeTimer = setTimeout(type, speed);
         } else {
-          setTimeout(() => {
+          typeCallbackTimer = setTimeout(() => {
+            if (isPaused) return;
             cursor.style.display = 'none';
             if (callback) callback();
           }, 800);
@@ -1316,10 +1916,19 @@
       }
     }
 
+    function pauseStory() {
+      isPlaying = false;
+      isPaused = true;
+      clearTimeout(sceneTimer);
+      clearTimeout(typeTimer);
+      clearTimeout(typeCallbackTimer);
+      clearInterval(progressTimer);
+      playBtn.innerHTML = '&#9654; Continue Story';
+    }
+
     function startStory() {
-      if (isPlaying) return;
       isPlaying = true;
-      playBtn.innerHTML = '&#9646;&#9646; Playing...';
+      playBtn.innerHTML = '&#9646;&#9646; Pause';
 
       if (currentScene >= story.length - 1) {
         currentScene = 0;
@@ -1333,6 +1942,10 @@
 
     // Play button
     playBtn.addEventListener('click', () => {
+      if (isPlaying) {
+        pauseStory();
+        return;
+      }
       if (playBtn.textContent.includes('Replay')) {
         currentScene = story.length; // force reset
       }
@@ -1368,6 +1981,37 @@
         span.style.color = `hsl(${340 + Math.random() * 30}, ${65 + Math.random() * 30}%, ${55 + Math.random() * 25}%)`;
         container.appendChild(span);
       }
+    }
+
+    /* ═══════════════════════════════════════════
+       BACKGROUND FIREWORKS
+    ═══════════════════════════════════════════ */
+    function launchBgFirework() {
+      const container = document.getElementById('bgFireworks');
+      const fw = document.createElement('div');
+      fw.className = 'bg-fw';
+      const hue = 320 + Math.random() * 60;
+      const color = `hsl(${hue}, ${70 + Math.random() * 30}%, ${55 + Math.random() * 30}%)`;
+      fw.style.background = color;
+      fw.style.left = (10 + Math.random() * 80) + '%';
+      fw.style.top = (10 + Math.random() * 60) + '%';
+      for (let i = 1; i <= 6; i++) {
+        const p = document.createElement('span');
+        p.className = 'p' + i;
+        p.style.background = color;
+        fw.appendChild(p);
+      }
+      void fw.offsetWidth;
+      fw.classList.add('burst');
+      container.appendChild(fw);
+      fw.addEventListener('animationend', () => fw.remove());
+    }
+    function startBgFireworks() {
+      function loop() {
+        launchBgFirework();
+        setTimeout(loop, 1200 + Math.random() * 2000);
+      }
+      loop();
     }
 
     /* ═══════════════════════════════════════════
@@ -1486,12 +2130,160 @@
        INIT
     ═══════════════════════════════════════════ */
     createBackgroundHearts();
+    startBgFireworks();
     createRain();
     createFinaleHearts();
 
     // Show initial narration
     narrationText.textContent = story[0].text.substring(0, 55) + '...';
     cursor.style.display = 'none';
+
+    /* ═══════════════════════════════════════════
+       ROMANTIC AMBIENT MUSIC (Web Audio API)
+    ═══════════════════════════════════════════ */
+    const musicBtn = document.getElementById('musicBtn');
+    let audioCtx = null;
+    let musicPlaying = false;
+    let masterGain = null;
+    let musicNodes = [];
+
+    // Musical notes (frequencies in Hz)
+    const NOTE = {
+      C3:130.81, D3:146.83, E3:164.81, F3:174.61, G3:196.00, A3:220.00, B3:246.94,
+      C4:261.63, D4:293.66, E4:329.63, F4:349.23, G4:392.00, A4:440.00, B4:493.88,
+      C5:523.25, D5:587.33, E5:659.26, G5:783.99
+    };
+
+    // Romantic chord progressions (I-V-vi-IV in C major style)
+    const chords = [
+      [NOTE.C3, NOTE.E4, NOTE.G4, NOTE.C5],
+      [NOTE.G3, NOTE.B4, NOTE.D5, NOTE.G5],
+      [NOTE.A3, NOTE.C4, NOTE.E4, NOTE.A4],
+      [NOTE.F3, NOTE.A4, NOTE.C5, NOTE.F3*2],
+      [NOTE.C3, NOTE.E4, NOTE.G4, NOTE.B4],
+      [NOTE.D3, NOTE.F4, NOTE.A4, NOTE.D5],
+      [NOTE.G3, NOTE.B3, NOTE.D4, NOTE.G4],
+      [NOTE.C3, NOTE.E4, NOTE.G4, NOTE.C5]
+    ];
+
+    // Melody notes that play over the chords
+    const melodies = [
+      [NOTE.E5, NOTE.D5, NOTE.C5, NOTE.D5],
+      [NOTE.G5, NOTE.E5, NOTE.D5, NOTE.C5],
+      [NOTE.A4, NOTE.C5, NOTE.E5, NOTE.C5],
+      [NOTE.D5, NOTE.C5, NOTE.A4, NOTE.G4],
+      [NOTE.E5, NOTE.G5, NOTE.E5, NOTE.D5],
+      [NOTE.C5, NOTE.D5, NOTE.E5, NOTE.G5],
+      [NOTE.D5, NOTE.B4, NOTE.G4, NOTE.A4],
+      [NOTE.C5, NOTE.E5, NOTE.G4, NOTE.C5]
+    ];
+
+    function createReverb(ctx) {
+      const convolver = ctx.createConvolver();
+      const rate = ctx.sampleRate;
+      const length = rate * 2.5;
+      const impulse = ctx.createBuffer(2, length, rate);
+      for (let ch = 0; ch < 2; ch++) {
+        const data = impulse.getChannelData(ch);
+        for (let i = 0; i < length; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2.2);
+        }
+      }
+      convolver.buffer = impulse;
+      return convolver;
+    }
+
+    function playPad(ctx, freq, startTime, dur, gain) {
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      g.gain.setValueAtTime(0, startTime);
+      g.gain.linearRampToValueAtTime(gain, startTime + 0.8);
+      g.gain.setValueAtTime(gain, startTime + dur - 0.8);
+      g.gain.linearRampToValueAtTime(0, startTime + dur);
+      osc.connect(g);
+      g.connect(masterGain);
+      osc.start(startTime);
+      osc.stop(startTime + dur);
+      musicNodes.push(osc);
+    }
+
+    function playMelodyNote(ctx, freq, startTime, dur, reverb) {
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+      g.gain.setValueAtTime(0, startTime);
+      g.gain.linearRampToValueAtTime(0.08, startTime + 0.05);
+      g.gain.exponentialRampToValueAtTime(0.001, startTime + dur);
+      osc.connect(g);
+      g.connect(reverb);
+      osc.start(startTime);
+      osc.stop(startTime + dur + 0.1);
+      musicNodes.push(osc);
+    }
+
+    function scheduleMusic() {
+      const ctx = audioCtx;
+      const reverb = createReverb(ctx);
+      reverb.connect(masterGain);
+      const now = ctx.currentTime + 0.1;
+      const chordDur = 4; // seconds per chord
+
+      for (let i = 0; i < chords.length; i++) {
+        const t = now + i * chordDur;
+        // Pad chord
+        chords[i].forEach(freq => {
+          playPad(ctx, freq, t, chordDur, 0.025);
+        });
+        // Melody notes
+        melodies[i].forEach((freq, j) => {
+          playMelodyNote(ctx, freq, t + j * (chordDur / 4), chordDur / 3, reverb);
+        });
+      }
+
+      // Loop
+      const totalDur = chords.length * chordDur * 1000;
+      if (musicPlaying) {
+        setTimeout(() => {
+          if (musicPlaying) scheduleMusic();
+        }, totalDur - 200);
+      }
+    }
+
+    function startMusic() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = 0.6;
+        masterGain.connect(audioCtx.destination);
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      musicPlaying = true;
+      musicBtn.classList.add('playing');
+      musicBtn.innerHTML = '&#9835; Music On';
+      scheduleMusic();
+    }
+
+    function stopMusic() {
+      musicPlaying = false;
+      musicBtn.classList.remove('playing');
+      musicBtn.innerHTML = '&#9835; Music';
+      musicNodes.forEach(n => { try { n.stop(); } catch(e){} });
+      musicNodes = [];
+      if (masterGain) {
+        masterGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
+        setTimeout(() => {
+          if (!musicPlaying && masterGain) masterGain.gain.value = 0.6;
+        }, 400);
+      }
+    }
+
+    musicBtn.addEventListener('click', () => {
+      if (musicPlaying) stopMusic();
+      else startMusic();
+    });
   </script>
 </body>
 </html>
